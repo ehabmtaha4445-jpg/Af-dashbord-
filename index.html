@@ -53,6 +53,19 @@
   .date-editor{ display:flex; align-items:center; gap:8px; margin-top:6px; }
   .date-editor input{ background:var(--paper); border:1px solid var(--line-strong); border-radius:3px; padding:6px 10px; font-family:inherit; font-size:12.5px; color:var(--ink); }
   .date-editor button{ background:var(--emerald); color:#fff; border:none; border-radius:3px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+
+  /* ---------- تنبيهات التحديثات ---------- */
+  #toastStack{
+    position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:10000;
+    display:flex; flex-direction:column; gap:8px; width:min(92vw, 420px);
+  }
+  .toast{
+    background:var(--paper); color:var(--ink); border-radius:6px; padding:12px 16px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.3); font-size:13px; display:flex; align-items:center; gap:10px;
+    border-inline-start:4px solid var(--emerald); animation:toastIn .25s ease-out;
+  }
+  .toast b{ color:var(--emerald-deep); }
+  @keyframes toastIn{ from{ opacity:0; transform:translateY(-10px);} to{ opacity:1; transform:translateY(0);} }
   header h1{ font-size: clamp(28px,4vw,42px); font-weight:800; line-height:1.15; }
   header .sub{ color:rgba(246,242,233,0.55); font-size:14px; margin-top:8px; }
   .header-total{ text-align:left; }
@@ -172,6 +185,8 @@
 
   .phone-link{ color:var(--emerald-deep); text-decoration:none; font-weight:600; direction:ltr; unicode-bidi:isolate; display:inline-flex; align-items:center; gap:4px;}
   .phone-link:hover{ text-decoration:underline; }
+  .call-icon{ color:rgba(14,27,34,0.35); text-decoration:none; margin-inline-start:8px; font-size:13px; }
+  .call-icon:hover{ color:var(--emerald-deep); }
   .no-phone{ color:rgba(14,27,34,0.3); font-size:12px; }
 
   .row-actions{ display:flex; gap:6px; justify-content:flex-end; }
@@ -190,7 +205,7 @@
     body{ background:#fff; color:#000; padding:0; }
     .wrap{ max-width:100%; }
     .table-controls, footer, .beam-labels .hint, .import-status{ display:none !important; }
-    .identity-bar, .login-panel, .edit-log, .row-actions, .actions-col, #saveIndicator, .date-editor{ display:none !important; }
+    .identity-bar, .login-panel, .edit-log, .row-actions, .actions-col, #saveIndicator, .date-editor, #toastStack{ display:none !important; }
     header{ border-bottom-color:#000; }
     header h1, .header-total .value{ color:#000; }
     header .sub{ color:#333; }
@@ -223,6 +238,11 @@
   .badge{ display:inline-block; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px; margin-inline-start:8px;}
   .badge.pos{ background:rgba(47,143,99,0.14); color:var(--emerald-deep);}
   .badge.neg{ background:rgba(190,74,60,0.14); color:var(--rust-deep);}
+  .due-badge{ display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+  .due-badge.due{ background:rgba(201,162,39,0.18); color:#8a6d10; }
+  .due-badge.notdue{ background:rgba(14,27,34,0.08); color:rgba(14,27,34,0.5); }
+  .due-badge.unset{ color:rgba(14,27,34,0.3); font-size:12px; }
+  .due-select{ border:1px solid var(--line-strong); border-radius:3px; padding:6px 8px; font-family:inherit; font-size:13px; width:100%; }
   .row-count{ font-size:11.5px; color:rgba(246,242,233,0.4); margin-top:10px; text-align:left;}
 
   footer{ text-align:center; font-size:11.5px; color:rgba(246,242,233,0.3); margin-top:50px;}
@@ -252,6 +272,8 @@
 </style>
 </head>
 <body>
+
+<div id="toastStack"></div>
 
 <div id="loginGate">
   <div class="gate-card">
@@ -356,6 +378,7 @@
         <button type="button" id="logToggleBtn">سجل التعديلات</button>
         <button type="button" id="syncBtn">🔄 مزامنة الآن</button>
         <button type="button" id="installBtn">📲 تثبيت كتطبيق</button>
+        <button type="button" id="notifyBtn">🔔 فعّل التنبيهات</button>
       </div>
     </div>
 
@@ -398,6 +421,11 @@
       <button data-filter="all" class="active">الكل</button>
       <button data-filter="pos">مدين فقط</button>
       <button data-filter="neg">دائن فقط</button>
+      <select id="dueFilter">
+        <option value="all">كل حالات الاستحقاق</option>
+        <option value="مستحق">مستحق فقط</option>
+        <option value="غير مستحق">غير مستحق فقط</option>
+      </select>
       <div class="io-group">
         <button type="button" class="io-btn add-row" id="addRowBtn">+ إضافة اسم</button>
         <button type="button" class="io-btn import" id="importBtn">⭳ استيراد Excel</button>
@@ -416,6 +444,7 @@
             <th data-sort="name">الاسم <span class="arrow">↕</span></th>
             <th>الهاتف</th>
             <th data-sort="amount">المبلغ <span class="arrow">↕</span></th>
+            <th>الاستحقاق</th>
             <th class="actions-col" id="actionsHeader" style="display:none;">إجراءات</th>
           </tr>
         </thead>
@@ -650,9 +679,59 @@ function renderEditLog(log){
 }
 if(hasFirestore){
   db.collection('af_dashboard').doc('editlog').onSnapshot(doc=>{
-    if(doc.exists && Array.isArray(doc.data().entries)) renderEditLog(doc.data().entries);
+    if(!doc.exists || !Array.isArray(doc.data().entries)) return;
+    const entries = doc.data().entries;
+    renderEditLog(entries);
+    notifyOnNewEntry(entries);
   }, err=>console.error('Firestore log sync error:', err));
 }
+
+// ---------- تنبيهات لحظية عند أي تعديل من المحاسب ----------
+let lastSeenLogAt = null;
+
+function showToast(message){
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `🔔 ${message}`;
+  stack.appendChild(el);
+  setTimeout(()=>{ el.remove(); }, 6000);
+}
+
+function notifyOnNewEntry(entries){
+  if(!entries.length) return;
+  const latest = entries[0];
+  if(lastSeenLogAt === null){ lastSeenLogAt = latest.at; return; } // أول تحميل — من غير تنبيه
+  if(latest.at === lastSeenLogAt) return;
+  lastSeenLogAt = latest.at;
+
+  const isSelf = session && latest.by === session.name;
+  if(isSelf) return; // متنبهش الشخص بنفس تعديله
+
+  const roleLabel = latest.role === 'accountant' ? 'المحاسب' : 'مستخدم';
+  const message = `${roleLabel} ${escapeHtml(latest.by)} عدّل البيانات: ${escapeHtml(latest.action)}`;
+  showToast(message);
+
+  if('Notification' in window && Notification.permission === 'granted'){
+    try{
+      new Notification('لوحة الفردوس — تحديث جديد', { body: `${latest.by}: ${latest.action}`, icon: 'icon-192.png' });
+    }catch(err){}
+  }
+}
+
+const notifyBtn = document.getElementById('notifyBtn');
+function updateNotifyBtn(){
+  if(!('Notification' in window)){ notifyBtn.style.display = 'none'; return; }
+  if(Notification.permission === 'granted'){ notifyBtn.textContent = '🔔 التنبيهات شغالة'; notifyBtn.disabled = true; }
+  else if(Notification.permission === 'denied'){ notifyBtn.textContent = '🔕 التنبيهات ممنوعة من إعدادات المتصفح'; notifyBtn.disabled = true; }
+  else{ notifyBtn.textContent = '🔔 فعّل التنبيهات'; notifyBtn.disabled = false; }
+}
+notifyBtn.addEventListener('click', async ()=>{
+  if(!('Notification' in window)) return;
+  await Notification.requestPermission();
+  updateNotifyBtn();
+});
+updateNotifyBtn();
 
 function renderIdentity(){
   document.getElementById('whoName').textContent = currentUserLabel();
@@ -772,17 +851,65 @@ let searchTerm = '';
 let editingId = null;
 let addingRow = false;
 
-function phoneCellHtml(phone){
+function toWhatsAppNumber(phone){
+  let digits = String(phone).replace(/\D/g,'');
+  if(digits.startsWith('00')) digits = digits.slice(2);
+  if(digits.startsWith('0')) digits = '20' + digits.slice(1); // افتراضي: مصر (٢٠) — غيّرها هنا لو محتاج كود دولة تاني
+  else if(digits.length <= 10 && !digits.startsWith('20')) digits = '20' + digits;
+  return digits;
+}
+
+function buildWelcomeMessage(row){
+  const isPos = row.amount > 0;
+  const statusLabel = isPos ? 'مدين' : 'دائن';
+  const amountFmt = fmt(Math.abs(row.amount));
+  const dueLine = row.due ? `\nحالة الاستحقاق: ${row.due}.` : '';
+  return `مرحبًا ${row.name} 🌟\nتحية طيبة من شركة الفردوس للنقل والتوريدات.\nرصيدكم الحالي معنا: ${amountFmt} جنيه (${statusLabel}).${dueLine}\nنشكر لكم حسن تعاملكم معنا، ونسعد بخدمتكم دائمًا.`;
+}
+
+function phoneCellHtml(row){
+  const phone = row.phone;
   if(!phone) return '<span class="no-phone">— لا يوجد</span>';
   const clean = escapeHtml(phone);
   const dial = String(phone).replace(/[^0-9+]/g,'');
-  return `<a class="phone-link" href="tel:${dial}">📞 ${clean}</a>`;
+  const waNumber = toWhatsAppNumber(phone);
+  const message = encodeURIComponent(buildWelcomeMessage(row));
+  return `<a class="phone-link" href="https://wa.me/${waNumber}?text=${message}" target="_blank" rel="noopener" title="إرسال رسالة واتساب بالرصيد">💬 ${clean}</a><a class="call-icon" href="tel:${dial}" title="اتصال مباشر">📞</a>`;
 }
+
+function normalizeDue(v){
+  const s = String(v || '').trim();
+  if(!s) return '';
+  if(/^غير/.test(s) || /not\s*due/i.test(s)) return 'غير مستحق';
+  if(/مستحق/.test(s) || /^due$/i.test(s)) return 'مستحق';
+  return '';
+}
+
+function dueCellHtml(due){
+  if(due === 'مستحق') return '<span class="due-badge due">مستحق</span>';
+  if(due === 'غير مستحق') return '<span class="due-badge notdue">غير مستحق</span>';
+  return '<span class="due-badge unset">—</span>';
+}
+
+function dueSelectHtml(id, selected){
+  const opts = ['', 'مستحق', 'غير مستحق'].map(v=>{
+    const label = v === '' ? '— غير محدد —' : v;
+    return `<option value="${v}" ${v===selected?'selected':''}>${label}</option>`;
+  }).join('');
+  return `<select class="due-select" id="${id}">${opts}</select>`;
+}
+
+let dueFilter = 'all';
+document.getElementById('dueFilter').addEventListener('change', (e)=>{
+  dueFilter = e.target.value;
+  renderTable();
+});
 
 function renderTable(){
   let rows = DATA.filter(r=>{
     if(currentFilter==='pos' && r.amount<=0) return false;
     if(currentFilter==='neg' && r.amount>=0) return false;
+    if(dueFilter !== 'all' && r.due !== dueFilter) return false;
     if(searchTerm && !r.name.includes(searchTerm)) return false;
     return true;
   });
@@ -800,6 +927,7 @@ function renderTable(){
       <td><input type="text" id="newName" placeholder="اسم جديد"></td>
       <td><input type="text" id="newPhone" placeholder="رقم الهاتف (اختياري)"></td>
       <td><input type="number" id="newAmount" placeholder="المبلغ" value="0"></td>
+      <td>${dueSelectHtml('newDue', '')}</td>
       <td class="actions-col"><div class="row-actions">
         <button type="button" class="save-btn" data-action="add-save">حفظ</button>
         <button type="button" class="cancel-btn" data-action="add-cancel">إلغاء</button>
@@ -813,6 +941,7 @@ function renderTable(){
         <td><input type="text" id="editName" value="${escapeHtml(r.name)}"></td>
         <td><input type="text" id="editPhone" value="${escapeHtml(r.phone||'')}" placeholder="01xxxxxxxxx"></td>
         <td><input type="number" id="editAmount" value="${r.amount}"></td>
+        <td>${dueSelectHtml('editDue', r.due || '')}</td>
         <td class="actions-col"><div class="row-actions">
           <button type="button" class="save-btn" data-action="save" data-id="${r._id}">حفظ</button>
           <button type="button" class="cancel-btn" data-action="cancel" data-id="${r._id}">إلغاء</button>
@@ -826,8 +955,9 @@ function renderTable(){
       </div></td>` : '';
     return `<tr>
       <td>${escapeHtml(r.name)} <span class="badge ${pos?'pos':'neg'}">${pos?'مدين':'دائن'}</span></td>
-      <td>${phoneCellHtml(r.phone)}</td>
+      <td>${phoneCellHtml(r)}</td>
       <td class="amt ${pos?'pos':'neg'}">${fmt(r.amount)}</td>
+      <td>${dueCellHtml(r.due)}</td>
       ${actionsHtml}
     </tr>`;
   }).join('');
@@ -850,9 +980,10 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
     const name = document.getElementById('editName').value.trim();
     const phone = document.getElementById('editPhone').value.trim();
     const amount = Number(document.getElementById('editAmount').value);
+    const due = document.getElementById('editDue').value;
     if(!name){ alert('الاسم مطلوب'); return; }
     const row = DATA.find(r=>r._id===id);
-    if(row){ row.name = name; row.phone = phone; row.amount = Number.isNaN(amount) ? 0 : amount; }
+    if(row){ row.name = name; row.phone = phone; row.amount = Number.isNaN(amount) ? 0 : amount; row.due = due; }
     editingId = null;
     pushLog(`تعديل بيانات "${name}"`);
     saveData();
@@ -875,8 +1006,9 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
     const name = document.getElementById('newName').value.trim();
     const phone = document.getElementById('newPhone').value.trim();
     const amount = Number(document.getElementById('newAmount').value) || 0;
+    const due = document.getElementById('newDue').value;
     if(!name){ alert('الاسم مطلوب'); return; }
-    DATA.push({ _id: nextId++, name, phone, amount });
+    DATA.push({ _id: nextId++, name, phone, amount, due });
     addingRow = false;
     pushLog(`إضافة اسم جديد "${name}"`);
     saveData();
@@ -1084,7 +1216,7 @@ document.getElementById('saveDateBtn').addEventListener('click', ()=>{
 
 async function boot(){
   const tbody = document.getElementById('tableBody');
-  if(hasFirestore || hasArtifactStorage){ tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:rgba(14,27,34,0.4);">جاري تحميل البيانات المشتركة...</td></tr>'; }
+  if(hasFirestore || hasArtifactStorage){ tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:rgba(14,27,34,0.4);">جاري تحميل البيانات المشتركة...</td></tr>'; }
 
   const syncBtn = document.getElementById('syncBtn');
   if(hasFirestore) syncBtn.textContent = '🌍 مزامنة فورية شغالة';
@@ -1103,9 +1235,9 @@ async function boot(){
 
 // ---------- تصدير Excel ----------
 document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const rows = DATA.map(r=>({ 'الاسم': r.name, 'الهاتف': r.phone || '', 'المبلغ': r.amount }));
+  const rows = DATA.map(r=>({ 'الاسم': r.name, 'الهاتف': r.phone || '', 'المبلغ': r.amount, 'الاستحقاق': r.due || '' }));
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{ wch: 30 }, { wch: 16 }, { wch: 14 }];
+  ws['!cols'] = [{ wch: 30 }, { wch: 16 }, { wch: 14 }, { wch: 14 }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'كشف الحساب');
   const stamp = new Date().toISOString().slice(0,10);
@@ -1179,6 +1311,7 @@ importInput.addEventListener('change', (e)=>{
       const amountKey = keys.find(k => /مبلغ|amount|رصيد|قيمه|قيمة/i.test(k)) || keys[1];
       const phoneKey = keys.find(k => /هاتف|جوال|موبايل|phone|mobile|tel/i.test(k));
       const dateKey = keys.find(k => /تاريخ|date/i.test(k));
+      const dueKey = keys.find(k => /استحقاق|due/i.test(k));
 
       if(!nameKey || !amountKey) throw new Error('تعذر التعرف على أعمدة الاسم والمبلغ');
 
@@ -1186,7 +1319,8 @@ importInput.addEventListener('change', (e)=>{
         .map(r => ({
           name: String(r[nameKey]).trim(),
           phone: phoneKey ? String(r[phoneKey] || '').trim() : '',
-          amount: Number(String(r[amountKey]).toString().replace(/,/g,'')) || 0
+          amount: Number(String(r[amountKey]).toString().replace(/,/g,'')) || 0,
+          due: dueKey ? normalizeDue(r[dueKey]) : ''
         }))
         .filter(r => r.name);
 
@@ -1292,7 +1426,7 @@ importPdfInput.addEventListener('change', async (e)=>{
       const name = m[1].replace(/[|]+$/,'').trim();
       const amount = Number(m[2].replace(/,/g,''));
       if(name && !Number.isNaN(amount) && name.length < 60){
-        parsed.push({ name, phone:'', amount });
+        parsed.push({ name, phone:'', amount, due:'' });
       }
     });
 
