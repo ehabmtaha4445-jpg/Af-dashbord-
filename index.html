@@ -193,6 +193,19 @@
   .call-icon{ color:rgba(14,27,34,0.35); text-decoration:none; margin-inline-start:8px; font-size:13px; }
   .call-icon:hover{ color:var(--emerald-deep); }
   .no-phone{ color:rgba(14,27,34,0.3); font-size:12px; }
+  .share-acc{ border:1px solid var(--emerald); background:transparent; color:var(--emerald-deep); border-radius:3px; padding:3px 8px; font-size:11.5px; font-family:inherit; cursor:pointer; margin-inline-start:8px; white-space:nowrap; }
+  .share-acc:hover{ background:var(--emerald); color:#EFFCF4; }
+  .share-acc:disabled{ opacity:.5; cursor:wait; }
+  .acc-modal{ position:fixed; inset:0; background:rgba(14,27,34,0.72); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000; }
+  .acc-modal.open{ display:flex; }
+  .acc-box{ background:var(--paper); color:var(--ink); border-radius:8px; padding:20px; width:100%; max-width:460px; display:flex; flex-direction:column; gap:10px; }
+  .acc-box h4{ font-family:'Cairo',sans-serif; font-size:16px; }
+  .acc-box p{ font-size:12px; color:rgba(14,27,34,0.6); line-height:1.7; }
+  .acc-box textarea{ width:100%; min-height:190px; resize:vertical; border:1px solid var(--line-strong); border-radius:4px; padding:10px; font-family:inherit; font-size:14px; line-height:1.8; background:#fff; color:var(--ink); }
+  .acc-box .acc-actions{ display:flex; gap:8px; justify-content:flex-end; }
+  .acc-box .acc-actions button{ border:none; border-radius:4px; padding:9px 16px; font-family:inherit; font-size:13px; cursor:pointer; }
+  .acc-box .acc-save{ background:var(--emerald); color:#EFFCF4; }
+  .acc-box .acc-cancel{ background:rgba(14,27,34,0.1); color:var(--ink); }
 
   .row-actions{ display:flex; gap:6px; justify-content:flex-end; }
   .row-actions button{ border:none; border-radius:3px; padding:5px 9px; font-size:12px; cursor:pointer; font-family:inherit; }
@@ -433,6 +446,7 @@
       </select>
       <div class="io-group">
         <button type="button" class="io-btn add-row" id="addRowBtn">+ إضافة اسم</button>
+        <button type="button" class="io-btn add-row" id="accountsBtn">🏦 حسابات الشركة</button>
         <button type="button" class="io-btn import" id="importBtn">⭳ استيراد Excel</button>
         <button type="button" class="io-btn export" id="exportBtn">⭱ تصدير Excel</button>
         <button type="button" class="io-btn pdf-import" id="importPdfBtn">⭳ استيراد PDF</button>
@@ -458,6 +472,18 @@
     </div>
     <div class="row-count" id="rowCount"></div>
   </section>
+
+  <div class="acc-modal" id="accModal">
+    <div class="acc-box">
+      <h4>🏦 حسابات الشركة للتحويل</h4>
+      <p>اكتب كل حساب في سطر (مثال: بنك مصر — رقم الحساب — اسم صاحب الحساب، أو رقم محفظة فودافون كاش). هتتحول لصورة وتتبعت للعميل مع الرسالة.</p>
+      <textarea id="accText" placeholder="بنك ..... — رقم الحساب: ....&#10;فودافون كاش: 01xxxxxxxxx"></textarea>
+      <div class="acc-actions">
+        <button type="button" class="acc-cancel" id="accCancel">إلغاء</button>
+        <button type="button" class="acc-save" id="accSave">حفظ</button>
+      </div>
+    </div>
+  </div>
 
   <footer>تم إنشاء هذه اللوحة تلقائياً من كشف الحساب المرفوع</footer>
 </div>
@@ -526,6 +552,26 @@ async function cloudSet(key, value, shared){
 
 const DATA_KEY = 'af_dashboard_data_v1';
 
+// ---------- أرقام الهواتف: تتسجل يدويًا فقط، ومنفصلة تمامًا عن ملفات الاستيراد والتصدير ----------
+// بتتحفظ باسم العميل/المورد، فاستيراد ملف جديد مبيمسحش الأرقام ولا بيقرأ منه أرقام.
+let PHONES = {};
+let ACCOUNTS_TEXT = ''; // حسابات الشركة (بتتحول لصورة وتتبعت مع رسالة التحويل)
+function phoneKey(name){ return String(name || '').replace(/\s+/g,' ').trim(); }
+function getPhone(row){ return PHONES[phoneKey(row.name)] || ''; }
+function setPhone(name, phone){
+  const k = phoneKey(name);
+  if(!k) return;
+  const v = String(phone || '').trim();
+  if(v) PHONES[k] = v; else delete PHONES[k];
+}
+// ترحيل أي أرقام قديمة كانت متخزنة جوه صفوف البيانات إلى القائمة المنفصلة
+function migrateRowPhones(){
+  DATA.forEach(r=>{
+    if(r.phone){ const k = phoneKey(r.name); if(k && !PHONES[k]) PHONES[k] = String(r.phone).trim(); }
+    delete r.phone;
+  });
+}
+
 function loadSavedData(){
   try{
     const raw = localStorage.getItem(DATA_KEY);
@@ -537,7 +583,7 @@ function loadSavedData(){
 }
 
 async function saveData(){
-  const bundle = { data: DATA, statementDate: statementDate, savedAt: new Date().toISOString() };
+  const bundle = { data: DATA, phones: PHONES, accounts: ACCOUNTS_TEXT, statementDate: statementDate, savedAt: new Date().toISOString() };
   try{ localStorage.setItem(DATA_KEY, JSON.stringify(bundle)); }catch(err){}
   if(hasFirestore){
     try{ await db.collection('af_dashboard').doc('data').set(bundle); }catch(err){ console.error(err); }
@@ -560,15 +606,22 @@ async function loadInitialData(){
   }
   if(!bundle) bundle = loadSavedData();
   if(bundle && Array.isArray(bundle.data) && bundle.data.length) DATA = bundle.data;
+  if(bundle && bundle.phones && typeof bundle.phones === 'object') PHONES = bundle.phones;
+  if(bundle && typeof bundle.accounts === 'string') ACCOUNTS_TEXT = bundle.accounts;
   if(bundle && typeof bundle.statementDate === 'string') statementDate = bundle.statementDate;
 }
 
 function applyIncomingBundle(bundle){
   if(!bundle || !Array.isArray(bundle.data)) return;
-  const dataChanged = JSON.stringify(bundle.data) !== JSON.stringify(DATA);
+  const incomingPhones = (bundle.phones && typeof bundle.phones === 'object') ? bundle.phones : null;
+  const dataChanged = JSON.stringify(bundle.data) !== JSON.stringify(DATA)
+    || (incomingPhones && JSON.stringify(incomingPhones) !== JSON.stringify(PHONES))
+    || (typeof bundle.accounts === 'string' && bundle.accounts !== ACCOUNTS_TEXT);
   const dateChanged = typeof bundle.statementDate === 'string' && bundle.statementDate !== statementDate;
   if(!dataChanged && !dateChanged) return;
   DATA = bundle.data;
+  if(incomingPhones) PHONES = incomingPhones;
+  if(typeof bundle.accounts === 'string') ACCOUNTS_TEXT = bundle.accounts;
   if(typeof bundle.statementDate === 'string') statementDate = bundle.statementDate;
   ensureIds();
   editingId = null;
@@ -618,6 +671,7 @@ function ensureIds(){
   DATA.forEach(r=>{ if(typeof r._id === 'number') maxId = Math.max(maxId, r._id); });
   if(nextId <= maxId) nextId = maxId + 1;
   DATA.forEach(r=>{ if(r._id == null) r._id = nextId++; });
+  migrateRowPhones();
 }
 
 // ---------- المستخدم الحالي والصلاحيات (محفوظة في هذا المتصفح فقط) ----------
@@ -756,7 +810,7 @@ function renderIdentity(){
 function applyPermissionUI(){
   const allowed = isAccountant();
   document.getElementById('actionsHeader').style.display = allowed ? '' : 'none';
-  ['addRowBtn','importBtn','importPdfBtn'].forEach(id=>{
+  ['addRowBtn','importBtn','importPdfBtn','accountsBtn'].forEach(id=>{
     const btn = document.getElementById(id);
     btn.classList.toggle('locked', !allowed);
     btn.title = allowed ? '' : 'هذه الميزة متاحة للمحاسب المسجل دخوله فقط';
@@ -869,17 +923,27 @@ function buildWelcomeMessage(row){
   const statusLabel = isPos ? 'مدين' : 'دائن';
   const amountFmt = fmt(Math.abs(row.amount));
   const dueLine = row.due ? `\nحالة الاستحقاق: ${row.due}.` : '';
-  return `مرحبًا ${row.name} 🌟\nتحية طيبة من شركة الفردوس للنقل والتوريدات.\nرصيدكم الحالي معنا: ${amountFmt} جنيه (${statusLabel}).${dueLine}\nنشكر لكم حسن تعاملكم معنا، ونسعد بخدمتكم دائمًا.`;
+  // لو الرصيد مدين (العميل عليه مبلغ) نضيف طلب التحويل
+  const transferLine = isPos
+    ? `\nنرجو التكرم بتحويل المبلغ المستحق (${amountFmt} جنيه) في أقرب وقت، وإرسال صورة إيصال التحويل على هذا الرقم لتأكيد الاستلام.`
+    : '';
+  return `السلام عليكم ورحمة الله وبركاته 🌟\nالأستاذ/ ${row.name}\nتحية طيبة من شركة الفردوس للنقل والتوريدات.\nرصيدكم الحالي معنا: ${amountFmt} جنيه (${statusLabel}).${dueLine}${transferLine}\nنشكر لكم حسن تعاملكم معنا، ونسعد بخدمتكم دائمًا.`;
+}
+
+function shareBtnHtml(row){
+  if(!(row.amount > 0)) return '';
+  return `<button type="button" class="share-acc" data-share-id="${row._id}" title="إرسال الرسالة مع صورة حسابات الشركة">📤 رسالة + حسابات</button>`;
 }
 
 function phoneCellHtml(row){
-  const phone = row.phone;
-  if(!phone) return '<span class="no-phone">— لا يوجد</span>';
+  const phone = getPhone(row);
+  const share = shareBtnHtml(row);
+  if(!phone) return '<span class="no-phone">— لا يوجد</span>' + share;
   const clean = escapeHtml(phone);
   const dial = String(phone).replace(/[^0-9+]/g,'');
   const waNumber = toWhatsAppNumber(phone);
   const message = encodeURIComponent(buildWelcomeMessage(row));
-  return `<a class="phone-link" href="https://wa.me/${waNumber}?text=${message}" target="_blank" rel="noopener" title="إرسال رسالة واتساب بالرصيد">💬 ${clean}</a><a class="call-icon" href="tel:${dial}" title="اتصال مباشر">📞</a>`;
+  return `<a class="phone-link" href="https://wa.me/${waNumber}?text=${message}" target="_blank" rel="noopener" title="إرسال رسالة واتساب بالرصيد">💬 ${clean}</a><a class="call-icon" href="tel:${dial}" title="اتصال مباشر">📞</a>${share}`;
 }
 
 function normalizeDue(v){
@@ -944,7 +1008,7 @@ function renderTable(){
     if(allowed && editingId === r._id){
       return `<tr class="row-edit-form" data-row-id="${r._id}">
         <td><input type="text" id="editName" value="${escapeHtml(r.name)}"></td>
-        <td><input type="text" id="editPhone" value="${escapeHtml(r.phone||'')}" placeholder="01xxxxxxxxx"></td>
+        <td><input type="text" id="editPhone" value="${escapeHtml(getPhone(r))}" placeholder="01xxxxxxxxx"></td>
         <td><input type="number" id="editAmount" value="${r.amount}"></td>
         <td>${dueSelectHtml('editDue', r.due || '')}</td>
         <td class="actions-col"><div class="row-actions">
@@ -988,7 +1052,7 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
     const due = document.getElementById('editDue').value;
     if(!name){ alert('الاسم مطلوب'); return; }
     const row = DATA.find(r=>r._id===id);
-    if(row){ row.name = name; row.phone = phone; row.amount = Number.isNaN(amount) ? 0 : amount; row.due = due; }
+    if(row){ const oldKey = phoneKey(row.name); if(oldKey !== phoneKey(name)) delete PHONES[oldKey]; setPhone(name, phone); row.name = name; row.amount = Number.isNaN(amount) ? 0 : amount; row.due = due; }
     editingId = null;
     pushLog(`تعديل بيانات "${name}"`);
     saveData();
@@ -1001,6 +1065,7 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
     if(!row) return;
     if(!confirm(`متأكد من حذف "${row.name}"؟`)) return;
     DATA = DATA.filter(r=>r._id!==id);
+    delete PHONES[phoneKey(row.name)];
     pushLog(`حذف "${row.name}"`);
     saveData();
     renderAll();
@@ -1013,7 +1078,8 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
     const amount = Number(document.getElementById('newAmount').value) || 0;
     const due = document.getElementById('newDue').value;
     if(!name){ alert('الاسم مطلوب'); return; }
-    DATA.push({ _id: nextId++, name, phone, amount, due });
+    DATA.push({ _id: nextId++, name, amount, due });
+    setPhone(name, phone);
     addingRow = false;
     pushLog(`إضافة اسم جديد "${name}"`);
     saveData();
@@ -1238,11 +1304,141 @@ async function boot(){
   renderAll();
 }
 
+// ---------- حسابات الشركة: تعديلها + تحويلها لصورة + مشاركتها مع الرسالة ----------
+const accModal = document.getElementById('accModal');
+const accText = document.getElementById('accText');
+
+document.getElementById('accountsBtn').addEventListener('click', ()=>{
+  if(!isAccountant()){ alert('تعديل حسابات الشركة متاح للمحاسب المسجل دخوله فقط'); return; }
+  accText.value = ACCOUNTS_TEXT;
+  accModal.classList.add('open');
+});
+document.getElementById('accCancel').addEventListener('click', ()=> accModal.classList.remove('open'));
+document.getElementById('accSave').addEventListener('click', ()=>{
+  if(!isAccountant()) return;
+  ACCOUNTS_TEXT = accText.value.trim();
+  pushLog('تعديل حسابات الشركة');
+  saveData();
+  accModal.classList.remove('open');
+  importStatus.textContent = ACCOUNTS_TEXT ? 'تم حفظ حسابات الشركة ✅' : 'تم مسح حسابات الشركة';
+});
+
+async function buildAccountsImage(){
+  try{ await document.fonts.load('700 34px Cairo'); await document.fonts.load('500 30px "IBM Plex Sans Arabic"'); }catch(err){}
+  const W = 1080, pad = 60, maxW = W - pad*2;
+  const bodyFont = '500 34px "IBM Plex Sans Arabic", Cairo, sans-serif';
+  const lineH = 62;
+  const measure = document.createElement('canvas').getContext('2d');
+  measure.font = bodyFont; measure.direction = 'rtl';
+
+  // تقسيم كل سطر لأسطر أقصر لو أطول من عرض الصورة
+  const lines = [];
+  ACCOUNTS_TEXT.split('\n').map(l=>l.trim()).filter(Boolean).forEach(raw=>{
+    const words = raw.split(/\s+/);
+    let cur = '';
+    words.forEach(w=>{
+      const test = cur ? cur + ' ' + w : w;
+      if(measure.measureText(test).width > maxW && cur){ lines.push(cur); cur = w; }
+      else cur = test;
+    });
+    if(cur) lines.push(cur);
+    lines.push(null); // فاصل بين الحسابات
+  });
+  if(lines.length && lines[lines.length-1] === null) lines.pop();
+
+  const headerH = 230, footerH = 110;
+  const H = headerH + lines.reduce((h,l)=>h + (l===null ? 26 : lineH), 0) + footerH;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+  ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+
+  ctx.fillStyle = '#F6F2E9'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#0E1B22'; ctx.fillRect(0,0,W,headerH);
+  ctx.fillStyle = '#C9A227'; ctx.fillRect(0,headerH,W,6);
+
+  ctx.fillStyle = '#F6F2E9';
+  ctx.font = '800 46px Cairo, sans-serif';
+  ctx.fillText('شركة الفردوس للنقل والتوريدات', W - pad, 88);
+  ctx.fillStyle = '#C9A227';
+  ctx.font = '700 36px Cairo, sans-serif';
+  ctx.fillText('حسابات الشركة للتحويل', W - pad, 158);
+
+  let y = headerH + 6 + 52;
+  ctx.fillStyle = '#0E1B22';
+  ctx.font = bodyFont;
+  lines.forEach(l=>{
+    if(l === null){
+      ctx.fillStyle = 'rgba(14,27,34,0.15)';
+      ctx.fillRect(pad, y - 8, maxW, 2);
+      y += 26; ctx.fillStyle = '#0E1B22';
+    }else{
+      ctx.fillText(l, W - pad, y);
+      y += lineH;
+    }
+  });
+
+  ctx.fillStyle = '#1E6146';
+  ctx.font = '600 30px "IBM Plex Sans Arabic", Cairo, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('نرجو إرسال صورة إيصال التحويل بعد التحويل — شكرًا لتعاملكم معنا', W/2, H - 52);
+
+  return await new Promise(res=> c.toBlob(res, 'image/png'));
+}
+
+async function shareMessageWithAccounts(row, btn){
+  if(!ACCOUNTS_TEXT){
+    alert(isAccountant()
+      ? 'ضيف حسابات الشركة الأول من زر "🏦 حسابات الشركة"'
+      : 'لسه محدش ضاف حسابات الشركة — المحاسب يضيفها الأول');
+    return;
+  }
+  const original = btn.textContent;
+  btn.disabled = true; btn.textContent = 'جاري التجهيز...';
+  try{
+    const blob = await buildAccountsImage();
+    const file = new File([blob], 'حسابات-الفردوس.png', { type:'image/png' });
+    const text = buildWelcomeMessage(row) + '\nأرقام حساباتنا للتحويل في الصورة المرفقة.';
+
+    if(navigator.canShare && navigator.canShare({ files:[file] })){
+      try{
+        await navigator.share({ files:[file], text });
+      }catch(err){
+        if(err && err.name === 'AbortError') return; // المستخدم قفل نافذة المشاركة
+        throw err;
+      }
+    }else{
+      // المتصفح مش بيدعم مشاركة الملفات: نحمّل الصورة ونفتح واتساب بالرسالة، والصورة تتبعت يدويًا
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'حسابات-الفردوس.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 5000);
+      const phone = getPhone(row);
+      const target = phone ? `https://wa.me/${toWhatsAppNumber(phone)}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(target, '_blank', 'noopener');
+      alert('المتصفح ده مش بيدعم مشاركة الملفات مباشرة. الصورة اتحملت على الجهاز — ارفقها يدويًا في المحادثة.');
+    }
+  }catch(err){
+    console.error(err);
+    alert('حصلت مشكلة في تجهيز صورة الحسابات: ' + (err && err.message ? err.message : err));
+  }finally{
+    btn.disabled = false; btn.textContent = original;
+  }
+}
+
+document.getElementById('tableBody').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-share-id]');
+  if(!btn) return;
+  const row = DATA.find(r=>r._id === Number(btn.dataset.shareId));
+  if(row) shareMessageWithAccounts(row, btn);
+});
+
 // ---------- تصدير Excel ----------
 document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const rows = DATA.map(r=>({ 'الاسم': r.name, 'الهاتف': r.phone || '', 'المبلغ': r.amount, 'الاستحقاق': r.due || '' }));
+  const rows = DATA.map(r=>({ 'الاسم': r.name, 'المبلغ': r.amount, 'الاستحقاق': r.due || '' }));
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{ wch: 30 }, { wch: 16 }, { wch: 14 }, { wch: 14 }];
+  ws['!cols'] = [{ wch: 30 }, { wch: 14 }, { wch: 14 }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'كشف الحساب');
   const stamp = new Date().toISOString().slice(0,10);
@@ -1309,12 +1505,11 @@ importInput.addEventListener('change', (e)=>{
 
       if(!rows.length) throw new Error('الملف فارغ');
 
-      // يحاول التعرف على أعمدة الاسم والهاتف والمبلغ والتاريخ بأي تسمية شائعة
+      // يحاول التعرف على أعمدة الاسم والمبلغ والتاريخ (الهاتف بيتسجل يدويًا فقط) بأي تسمية شائعة
       const sample = rows[0];
       const keys = Object.keys(sample);
       const nameKey = keys.find(k => /اسم|name/i.test(k)) || keys[0];
       const amountKey = keys.find(k => /مبلغ|amount|رصيد|قيمه|قيمة/i.test(k)) || keys[1];
-      const phoneKey = keys.find(k => /هاتف|جوال|موبايل|phone|mobile|tel/i.test(k));
       const dateKey = keys.find(k => /تاريخ|date/i.test(k));
       const dueKey = keys.find(k => /استحقاق|due/i.test(k));
 
@@ -1323,7 +1518,6 @@ importInput.addEventListener('change', (e)=>{
       const parsed = rows
         .map(r => ({
           name: String(r[nameKey]).trim(),
-          phone: phoneKey ? String(r[phoneKey] || '').trim() : '',
           amount: Number(String(r[amountKey]).toString().replace(/,/g,'')) || 0,
           due: dueKey ? normalizeDue(r[dueKey]) : ''
         }))
@@ -1431,7 +1625,7 @@ importPdfInput.addEventListener('change', async (e)=>{
       const name = m[1].replace(/[|]+$/,'').trim();
       const amount = Number(m[2].replace(/,/g,''));
       if(name && !Number.isNaN(amount) && name.length < 60){
-        parsed.push({ name, phone:'', amount, due:'' });
+        parsed.push({ name, amount, due:'' });
       }
     });
 
