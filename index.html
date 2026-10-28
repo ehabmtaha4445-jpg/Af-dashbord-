@@ -29,7 +29,8 @@
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{background:var(--ink); color:var(--paper); font-family:'IBM Plex Sans Arabic', sans-serif;}
-  body{ padding: 28px 18px 80px; }
+  body{ padding: 28px 18px 80px; overflow-x:hidden; }
+  html{ overflow-x:hidden; }
   .wrap{ max-width: 1180px; margin:0 auto; }
 
   h1,h2,h3,.num-display{ font-family:'Cairo', sans-serif; }
@@ -129,7 +130,11 @@
   }
   .table-controls button.active, .table-controls select:focus{ border-color:var(--gold); color:var(--gold); }
   .table-controls .spacer{ flex:0 0 100%; height:0; }
-  .table-controls .io-group{ display:flex; gap:10px; margin-inline-start:auto; }
+  .table-controls .io-group{ display:flex; gap:10px; margin-inline-start:auto; flex-wrap:wrap; max-width:100%; }
+  @media(max-width:700px){
+    .table-controls .io-group{ margin-inline-start:0; width:100%; }
+    .table-controls .io-btn{ flex:1 1 auto; justify-content:center; font-size:12px; padding:10px 10px; }
+  }
   .table-controls .io-btn{
     display:inline-flex; align-items:center; gap:6px; background:var(--paper); color:var(--ink);
     border:1px solid transparent; border-radius:3px; padding:10px 16px; font-family:inherit;
