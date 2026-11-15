@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme="midnight">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>كشف حساب — لوحة التحكم</title>
+<script>try{var __t=localStorage.getItem("af-theme");if(__t)document.documentElement.setAttribute("data-theme",__t);}catch(e){}</script>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0E1B22">
+<meta name="theme-color" content="#0A1730">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,19 +17,37 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0E1B22;
-    --paper:#F6F2E9;
-    --paper-dim:#EDE7D8;
-    --emerald:#2F8F63;
-    --emerald-deep:#1E6146;
-    --rust:#BE4A3C;
-    --rust-deep:#8F3329;
-    --gold:#C9A227;
-    --line: rgba(14,27,34,0.12);
-    --line-strong: rgba(14,27,34,0.28);
+    --line: rgba(var(--card-fg-rgb),0.12);
+    --line-strong: rgba(var(--card-fg-rgb),0.28);
+    --page-line: rgba(var(--fg-rgb),0.14);
+    --page-line-strong: rgba(var(--fg-rgb),0.30);
+    --chart-grid: rgba(var(--card-fg-rgb),0.08);
   }
+  html[data-theme="midnight"]{ --bg:#0A1730; --fg:#F4F7FC; --fg-rgb:244,247,252; --card:#F4F7FC; --card-dim:#E6ECF7; --card-fg:#0A1730; --card-fg-rgb:10,23,48; --emerald:#14B8A6; --emerald-deep:#0F766E; --rust:#F0506E; --rust-deep:#B8243F; --gold:#F5B63D; --glow1:rgba(20,184,166,.22); --glow2:rgba(99,102,241,.20); --c-accent:#6366F1; --c-sky:#38BDF8; --c-neutral:#CBD5E1; --chart-text:#475569; --on-accent:#ffffff; --on-rust:#ffffff; --on-gold:#0A1730; --shadow:rgba(0,0,0,.25); }
+  html[data-theme="emerald"]{ --bg:#06201A; --fg:#F3F1E8; --fg-rgb:243,241,232; --card:#FBF8EF; --card-dim:#EFEADB; --card-fg:#0B2A22; --card-fg-rgb:11,42,34; --emerald:#1FA67A; --emerald-deep:#136B4E; --rust:#D1495B; --rust-deep:#9E2B3B; --gold:#D4A93A; --glow1:rgba(212,169,58,.18); --glow2:rgba(31,166,122,.20); --c-accent:#B08A2E; --c-sky:#4FB3A9; --c-neutral:#D8D2BE; --chart-text:#4B5D55; --on-accent:#ffffff; --on-rust:#ffffff; --on-gold:#06201A; --shadow:rgba(0,0,0,.30); }
+  html[data-theme="graphite"]{ --bg:#0A0E15; --fg:#E8EDF5; --fg-rgb:232,237,245; --card:#151C28; --card-dim:#1D2635; --card-fg:#E8EDF5; --card-fg-rgb:232,237,245; --emerald:#2DD4BF; --emerald-deep:#2DD4BF; --rust:#FB7185; --rust-deep:#FB7185; --gold:#FBBF24; --glow1:rgba(45,212,191,.12); --glow2:rgba(129,140,248,.14); --c-accent:#818CF8; --c-sky:#38BDF8; --c-neutral:#475569; --chart-text:#94A3B8; --on-accent:#04201C; --on-rust:#2A0A10; --on-gold:#1A1200; --color-scheme:dark; --shadow:rgba(0,0,0,.50); }
+  html[data-theme="daylight"]{ --bg:#EEF2F8; --fg:#0F1B2D; --fg-rgb:15,27,45; --card:#FFFFFF; --card-dim:#F1F5FA; --card-fg:#0F1B2D; --card-fg-rgb:15,27,45; --emerald:#059669; --emerald-deep:#047857; --rust:#E11D48; --rust-deep:#BE123C; --gold:#B7791F; --glow1:rgba(37,99,235,.10); --glow2:rgba(14,165,233,.08); --c-accent:#2563EB; --c-sky:#0EA5E9; --c-neutral:#CBD5E1; --chart-text:#475569; --on-accent:#ffffff; --on-rust:#ffffff; --on-gold:#ffffff; --shadow:rgba(15,27,45,.08); }
+  html[data-theme="royal"]{ --bg:#140F2E; --fg:#F1EEFB; --fg-rgb:241,238,251; --card:#FAF8FF; --card-dim:#EDE8FA; --card-fg:#1B1340; --card-fg-rgb:27,19,64; --emerald:#17B890; --emerald-deep:#0E7F63; --rust:#F43F7A; --rust-deep:#BE1D55; --gold:#F2C14E; --glow1:rgba(139,92,246,.28); --glow2:rgba(244,63,122,.14); --c-accent:#7C3AED; --c-sky:#60A5FA; --c-neutral:#D4CCEE; --chart-text:#5B5480; --on-accent:#ffffff; --on-rust:#ffffff; --on-gold:#1B1340; --shadow:rgba(0,0,0,.35); }
+  html[data-theme="sand"]{ --bg:#F4EEE4; --fg:#2B2118; --fg-rgb:43,33,24; --card:#FFFDF9; --card-dim:#F1E8DA; --card-fg:#2B2118; --card-fg-rgb:43,33,24; --emerald:#3F8F6B; --emerald-deep:#2D6A4F; --rust:#C8553D; --rust-deep:#9C3A26; --gold:#B7791F; --glow1:rgba(200,85,61,.08); --glow2:rgba(63,143,107,.08); --c-accent:#8B5E3C; --c-sky:#5B9BB5; --c-neutral:#D9CDB8; --chart-text:#6B5A48; --on-accent:#ffffff; --on-rust:#ffffff; --on-gold:#ffffff; --shadow:rgba(43,33,24,.10); }
+  html{ color-scheme:light; }
+  html[data-theme="graphite"]{ color-scheme:dark; }
+  .row-edit-form input, .row-edit-form select, .login-panel input, .login-panel select, .gate-card input, .gate-card select{ background:var(--card-dim); color:var(--card-fg); }
+  body, .stat, .chart-card, .table-wrap, .toast{ transition:background-color .35s ease, color .35s ease, border-color .35s ease; }
+  .stat, .chart-card{ transition:transform .2s ease, box-shadow .2s ease, background-color .35s ease, color .35s ease; }
+  .stat:hover, .chart-card:hover{ transform:translateY(-2px); }
+
+  /* ---------- Theme picker ---------- */
+  .theme-btn{ position:fixed; left:16px; bottom:16px; z-index:9000; width:48px; height:48px; border-radius:50%; border:1px solid var(--page-line-strong); background:var(--card); color:var(--card-fg); font-size:22px; cursor:pointer; box-shadow:0 8px 24px var(--shadow); }
+  .theme-panel{ position:fixed; left:16px; bottom:74px; z-index:9000; width:min(92vw, 300px); background:var(--card); color:var(--card-fg); border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:0 16px 40px var(--shadow); display:none; }
+  .theme-panel.open{ display:block; }
+  .tp-title{ font-family:'Cairo',sans-serif; font-weight:800; font-size:14px; margin-bottom:10px; }
+  .tp-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+  .tp-item{ display:flex; align-items:center; gap:8px; padding:8px; border-radius:10px; border:1.5px solid var(--line); background:transparent; color:var(--card-fg); font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; }
+  .tp-item.active{ border-color:var(--emerald); box-shadow:0 0 0 2px color-mix(in srgb, var(--emerald) 25%, transparent); }
+  .tp-sw{ width:34px; height:34px; border-radius:9px; flex-shrink:0; border:1px solid var(--line); background:linear-gradient(135deg, var(--a) 0 45%, var(--b) 45% 75%, var(--c) 75% 100%); }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{background:var(--ink); color:var(--paper); font-family:'IBM Plex Sans Arabic', sans-serif;}
+  html,body{ background:var(--bg); color:var(--fg); font-family:'IBM Plex Sans Arabic', sans-serif; }
+  body{ background:radial-gradient(1100px 520px at 85% -8%, var(--glow1), transparent 60%), radial-gradient(900px 480px at 5% 0%, var(--glow2), transparent 60%), var(--bg); background-attachment:fixed; }
   body{ padding: 28px 18px 80px; overflow-x:hidden; }
   html{ overflow-x:hidden; }
   .wrap{ max-width: 1180px; margin:0 auto; }
@@ -39,21 +58,21 @@
   header{
     display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end;
     gap:24px; padding-bottom:26px; margin-bottom:30px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--page-line);
   }
   .brand{ display:flex; align-items:center; gap:16px; margin-bottom:16px; }
-  .brand img{ width:64px; height:64px; object-fit:contain; background:var(--paper); border-radius:8px; padding:6px; flex-shrink:0; }
-  .brand-text .company{ font-family:'Cairo', sans-serif; font-size:19px; font-weight:800; color:var(--paper); line-height:1.3; }
-  .brand-text .people{ font-size:12.5px; color:rgba(246,242,233,0.55); margin-top:4px; line-height:1.6; }
-  .brand-text .people b{ color:rgba(246,242,233,0.8); font-weight:600; }
+  .brand img{ width:64px; height:64px; object-fit:contain; background:#fff; border-radius:10px; padding:6px; flex-shrink:0; }
+  .brand-text .company{ font-family:'Cairo', sans-serif; font-size:19px; font-weight:800; color:var(--fg); line-height:1.3; }
+  .brand-text .people{ font-size:12.5px; color:rgba(var(--fg-rgb),0.55); margin-top:4px; line-height:1.6; }
+  .brand-text .people b{ color:rgba(var(--fg-rgb),0.8); font-weight:600; }
   .eyebrow{
     font-size:12px; letter-spacing:.12em; color:var(--gold); font-weight:600;
     display:flex; align-items:center; gap:8px; margin-bottom:10px;
   }
   .eyebrow::before{content:""; width:22px; height:1px; background:var(--gold); display:inline-block;}
   .date-editor{ display:flex; align-items:center; gap:8px; margin-top:6px; }
-  .date-editor input{ background:var(--paper); border:1px solid var(--line-strong); border-radius:3px; padding:6px 10px; font-family:inherit; font-size:12.5px; color:var(--ink); }
-  .date-editor button{ background:var(--emerald); color:#fff; border:none; border-radius:3px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .date-editor input{ background:var(--card); border:1px solid var(--line-strong); border-radius:3px; padding:6px 10px; font-family:inherit; font-size:12.5px; color:var(--card-fg); }
+  .date-editor button{ background:var(--emerald); color:var(--on-accent); border:none; border-radius:3px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
 
   /* ---------- تنبيهات التحديثات ---------- */
   #toastStack{
@@ -61,31 +80,31 @@
     display:flex; flex-direction:column; gap:8px; width:min(92vw, 420px);
   }
   .toast{
-    background:var(--paper); color:var(--ink); border-radius:6px; padding:12px 16px;
+    background:var(--card); color:var(--card-fg); border-radius:6px; padding:12px 16px;
     box-shadow:0 12px 30px rgba(0,0,0,0.3); font-size:13px; display:flex; align-items:center; gap:10px;
     border-inline-start:4px solid var(--emerald); animation:toastIn .25s ease-out;
   }
   .toast b{ color:var(--emerald-deep); }
   @keyframes toastIn{ from{ opacity:0; transform:translateY(-10px);} to{ opacity:1; transform:translateY(0);} }
   header h1{ font-size: clamp(28px,4vw,42px); font-weight:800; line-height:1.15; }
-  header .sub{ color:rgba(246,242,233,0.55); font-size:14px; margin-top:8px; }
+  header .sub{ color:rgba(var(--fg-rgb),0.55); font-size:14px; margin-top:8px; }
   .header-total{ text-align:left; }
-  .header-total .label{ font-size:12px; color:rgba(246,242,233,0.55); margin-bottom:6px; }
-  .header-total .value{ font-size: clamp(30px,4.4vw,48px); font-weight:900; color:var(--paper); direction:ltr; unicode-bidi:isolate;}
+  .header-total .label{ font-size:12px; color:rgba(var(--fg-rgb),0.55); margin-bottom:6px; }
+  .header-total .value{ font-size: clamp(30px,4.4vw,48px); font-weight:900; color:var(--fg); direction:ltr; unicode-bidi:isolate;}
   .header-total .value span{ font-size:0.4em; color:var(--gold); margin-inline-start:6px;}
 
   /* ---------- Stat cards ---------- */
   .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:32px; }
   @media(max-width:820px){ .stats{grid-template-columns:repeat(2,1fr);} }
   .stat{
-    background: var(--paper); color:var(--ink); border-radius:4px; padding:18px 20px;
-    position:relative; overflow:hidden;
+    background: var(--card); color:var(--card-fg); border-radius:16px; padding:18px 20px;
+    position:relative; overflow:hidden; box-shadow:0 10px 30px var(--shadow);
   }
   .stat::before{content:""; position:absolute; inset-inline-start:0; top:0; bottom:0; width:4px;}
   .stat.credit::before{ background:var(--emerald); }
   .stat.debit::before{ background:var(--rust); }
   .stat.neutral::before{ background:var(--gold); }
-  .stat .label{ font-size:12.5px; color:rgba(14,27,34,0.6); margin-bottom:8px; font-weight:500;}
+  .stat .label{ font-size:12.5px; color:rgba(var(--card-fg-rgb),0.6); margin-bottom:8px; font-weight:500;}
   .stat .value{ font-size:24px; font-weight:800; direction:ltr; unicode-bidi:isolate; text-align:right;}
   .stat.credit .value{ color:var(--emerald-deep); }
   .stat.debit .value{ color:var(--rust-deep); }
@@ -93,39 +112,42 @@
   /* ---------- Balance beam (signature element) ---------- */
   .beam-section{ margin-bottom:38px; }
   .beam-title{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px;}
-  .beam-title h2{ font-size:15px; font-weight:700; color:rgba(246,242,233,0.85);}
-  .beam-title .hint{ font-size:11.5px; color:rgba(246,242,233,0.4);}
+  .beam-title h2{ font-size:15px; font-weight:700; color:rgba(var(--fg-rgb),0.85);}
+  .beam-title .hint{ font-size:11.5px; color:rgba(var(--fg-rgb),0.4);}
   .beam{
-    display:flex; align-items:center; height:54px; border-radius:3px; overflow:hidden;
-    background:var(--paper-dim); position:relative;
+    display:flex; align-items:center; height:54px; border-radius:14px; overflow:hidden;
+    background:var(--card-dim); position:relative;
   }
   .beam .seg{ height:100%; display:flex; align-items:center; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden;}
-  .beam .credit-seg{ background:linear-gradient(90deg,var(--emerald-deep),var(--emerald)); color:#EFFCF4; justify-content:flex-end; padding-inline-end:14px;}
-  .beam .debit-seg{ background:linear-gradient(90deg,var(--rust),var(--rust-deep)); color:#FDEDEB; justify-content:flex-start; padding-inline-start:14px;}
+  .beam .credit-seg{ background:linear-gradient(90deg,var(--emerald-deep),var(--emerald)); color:var(--on-accent); justify-content:flex-end; padding-inline-end:14px;}
+  .beam .debit-seg{ background:linear-gradient(90deg,var(--rust),var(--rust-deep)); color:var(--on-rust); justify-content:flex-start; padding-inline-start:14px;}
   .beam .pivot{
     position:absolute; top:-10px; bottom:-10px; width:2px; background:var(--gold);
-    box-shadow:0 0 0 4px rgba(201,162,39,0.15);
+    box-shadow:0 0 0 4px color-mix(in srgb, var(--gold) 15%, transparent);
   }
-  .beam-labels{ display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:rgba(246,242,233,0.5);}
+  .beam-labels{ display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:rgba(var(--fg-rgb),0.5);}
 
   /* ---------- Charts ---------- */
   .charts{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:38px; }
   @media(max-width:820px){ .charts{grid-template-columns:1fr;} }
-  .chart-card{ background:var(--paper); border-radius:4px; padding:20px 20px 8px; color:var(--ink);}
+  .chart-card{ background:var(--card); border-radius:16px; padding:20px 20px 12px; color:var(--card-fg); box-shadow:0 10px 30px var(--shadow);}
+  .charts-3{ grid-template-columns:repeat(3,1fr); }
+  @media(max-width:1000px){ .charts-3{grid-template-columns:1fr;} }
+  .chart-card.wide{ grid-column:1 / -1; }
   .chart-card h3{ font-size:14px; font-weight:700; margin-bottom:4px;}
-  .chart-card .chart-sub{ font-size:11.5px; color:rgba(14,27,34,0.5); margin-bottom:10px;}
+  .chart-card .chart-sub{ font-size:11.5px; color:rgba(var(--card-fg-rgb),0.5); margin-bottom:10px;}
   .chart-card canvas{ max-height:280px; }
 
   /* ---------- Table ---------- */
-  .table-section h2{ font-size:15px; font-weight:700; color:rgba(246,242,233,0.85); margin-bottom:14px;}
+  .table-section h2{ font-size:15px; font-weight:700; color:rgba(var(--fg-rgb),0.85); margin-bottom:14px;}
   .table-controls{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
   .table-controls input[type="text"]{
-    flex:1; min-width:180px; background:var(--paper); border:1px solid transparent; border-radius:3px;
-    padding:10px 14px; font-family:inherit; font-size:13px; color:var(--ink);
+    flex:1; min-width:180px; background:var(--card); border:1px solid transparent; border-radius:3px;
+    padding:10px 14px; font-family:inherit; font-size:13px; color:var(--card-fg);
   }
-  .table-controls input::placeholder{ color:rgba(14,27,34,0.4); }
+  .table-controls input::placeholder{ color:rgba(var(--card-fg-rgb),0.4); }
   .table-controls select, .table-controls button{
-    background:transparent; border:1px solid var(--line-strong); color:var(--paper);
+    background:transparent; border:1px solid var(--page-line-strong); color:var(--fg);
     border-radius:3px; padding:10px 14px; font-family:inherit; font-size:13px; cursor:pointer;
   }
   .table-controls button.active, .table-controls select:focus{ border-color:var(--gold); color:var(--gold); }
@@ -136,90 +158,74 @@
     .table-controls .io-btn{ flex:1 1 auto; justify-content:center; font-size:12px; padding:10px 10px; }
   }
   .table-controls .io-btn{
-    display:inline-flex; align-items:center; gap:6px; background:var(--paper); color:var(--ink);
+    display:inline-flex; align-items:center; gap:6px; background:var(--card); color:var(--card-fg);
     border:1px solid transparent; border-radius:3px; padding:10px 16px; font-family:inherit;
     font-size:13px; font-weight:700; cursor:pointer;
   }
-  .table-controls .io-btn.export{ background:var(--emerald); color:#EFFCF4; }
-  .table-controls .io-btn.import{ background:var(--gold); color:var(--ink); }
-  .table-controls .io-btn.pdf-export{ background:var(--rust); color:#FDEDEB; }
-  .table-controls .io-btn.pdf-import{ background:transparent; color:var(--paper); border:1px solid var(--line-strong); }
+  .table-controls .io-btn.export{ background:var(--emerald); color:var(--on-accent); }
+  .table-controls .io-btn.import{ background:var(--gold); color:var(--on-gold); }
+  .table-controls .io-btn.pdf-export{ background:var(--rust); color:var(--on-rust); }
+  .table-controls .io-btn.pdf-import{ background:transparent; color:var(--fg); border:1px solid var(--page-line-strong); }
   .table-controls .io-btn:hover{ filter:brightness(1.08); }
   .table-controls .io-btn:disabled{ opacity:.5; cursor:wait; filter:none; }
   #importInput, #importPdfInput{ display:none; }
-  .import-status{ font-size:11.5px; color:rgba(246,242,233,0.55); margin-bottom:10px; min-height:14px; }
+  .import-status{ font-size:11.5px; color:rgba(var(--fg-rgb),0.55); margin-bottom:10px; min-height:14px; }
 
   /* ---------- Identity / permissions bar ---------- */
   .identity-bar{
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
-    background:rgba(246,242,233,0.06); border:1px solid var(--line); border-radius:4px;
-    padding:10px 14px; margin-bottom:14px; font-size:12.5px; color:rgba(246,242,233,0.7);
+    background:rgba(var(--fg-rgb),0.06); border:1px solid var(--page-line); border-radius:4px;
+    padding:10px 14px; margin-bottom:14px; font-size:12.5px; color:rgba(var(--fg-rgb),0.7);
   }
-  .identity-bar .who b{ color:var(--paper); }
+  .identity-bar .who b{ color:var(--fg); }
   .identity-bar .role-tag{ display:inline-block; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; margin-inline-start:8px;}
-  .identity-bar .role-tag.accountant{ background:rgba(47,143,99,0.18); color:#8CE0B4; }
-  .identity-bar .role-tag.viewer{ background:rgba(201,162,39,0.18); color:var(--gold); }
+  .identity-bar .role-tag.accountant{ background:color-mix(in srgb, var(--emerald) 18%, transparent); color:var(--fg); }
+  .identity-bar .role-tag.viewer{ background:color-mix(in srgb, var(--gold) 18%, transparent); color:var(--gold); }
   .identity-bar .actions{ display:flex; gap:8px; }
   .identity-bar button{
-    background:transparent; border:1px solid var(--line-strong); color:var(--paper);
+    background:transparent; border:1px solid var(--page-line-strong); color:var(--fg);
     border-radius:3px; padding:6px 12px; font-family:inherit; font-size:12px; cursor:pointer;
   }
   .login-panel{
-    display:none; background:var(--paper); color:var(--ink); border-radius:4px; padding:16px;
+    display:none; background:var(--card); color:var(--card-fg); border-radius:4px; padding:16px;
     margin-bottom:14px; gap:10px; flex-wrap:wrap; align-items:flex-end;
   }
   .login-panel.open{ display:flex; }
-  .login-panel .field{ display:flex; flex-direction:column; gap:5px; font-size:11.5px; color:rgba(14,27,34,0.6); }
+  .login-panel .field{ display:flex; flex-direction:column; gap:5px; font-size:11.5px; color:rgba(var(--card-fg-rgb),0.6); }
   .login-panel input, .login-panel select{
     border:1px solid var(--line); border-radius:3px; padding:8px 10px; font-family:inherit; font-size:13px;
   }
-  .login-panel .go{ background:var(--emerald-deep); color:#fff; border:none; border-radius:3px; padding:9px 18px; font-weight:700; cursor:pointer; font-family:inherit;}
-  .login-panel .note{ font-size:11px; color:rgba(14,27,34,0.5); flex-basis:100%; }
+  .login-panel .go{ background:var(--emerald-deep); color:var(--on-accent); border:none; border-radius:3px; padding:9px 18px; font-weight:700; cursor:pointer; font-family:inherit;}
+  .login-panel .note{ font-size:11px; color:rgba(var(--card-fg-rgb),0.5); flex-basis:100%; }
 
   .io-btn.add-row{ background:transparent; color:var(--emerald); border:1px solid var(--emerald); }
   .io-btn.locked{ opacity:.4; cursor:not-allowed; }
-  .io-btn.log-toggle{ background:transparent; color:var(--paper); border:1px solid var(--line-strong); }
+  .io-btn.log-toggle{ background:transparent; color:var(--fg); border:1px solid var(--page-line-strong); }
 
-  .edit-log{ display:none; background:var(--paper); color:var(--ink); border-radius:4px; padding:14px 16px; margin-bottom:14px; max-height:220px; overflow:auto; }
+  .edit-log{ display:none; background:var(--card); color:var(--card-fg); border-radius:4px; padding:14px 16px; margin-bottom:14px; max-height:220px; overflow:auto; }
   .edit-log.open{ display:block; }
-  .edit-log h4{ font-size:12.5px; margin-bottom:8px; color:rgba(14,27,34,0.6); }
+  .edit-log h4{ font-size:12.5px; margin-bottom:8px; color:rgba(var(--card-fg-rgb),0.6); }
   .edit-log ul{ list-style:none; display:flex; flex-direction:column; gap:6px; }
-  .edit-log li{ font-size:12px; border-bottom:1px dashed rgba(14,27,34,0.1); padding-bottom:6px; }
-  .edit-log li .when{ color:rgba(14,27,34,0.45); margin-inline-start:8px; direction:ltr; unicode-bidi:isolate; display:inline-block; }
-  .edit-log .empty{ font-size:12px; color:rgba(14,27,34,0.4); }
+  .edit-log li{ font-size:12px; border-bottom:1px dashed rgba(var(--card-fg-rgb),0.1); padding-bottom:6px; }
+  .edit-log li .when{ color:rgba(var(--card-fg-rgb),0.45); margin-inline-start:8px; direction:ltr; unicode-bidi:isolate; display:inline-block; }
+  .edit-log .empty{ font-size:12px; color:rgba(var(--card-fg-rgb),0.4); }
 
-  .phone-link{ color:var(--emerald-deep); text-decoration:none; font-weight:600; direction:ltr; unicode-bidi:isolate; display:inline-flex; align-items:center; gap:4px;}
-  .phone-link:hover{ text-decoration:underline; }
-  .call-icon{ color:rgba(14,27,34,0.35); text-decoration:none; margin-inline-start:8px; font-size:13px; }
-  .call-icon:hover{ color:var(--emerald-deep); }
-  .no-phone{ color:rgba(14,27,34,0.3); font-size:12px; }
-  .share-acc{ border:1px solid var(--emerald); background:transparent; color:var(--emerald-deep); border-radius:3px; padding:3px 8px; font-size:11.5px; font-family:inherit; cursor:pointer; margin-inline-start:8px; white-space:nowrap; }
-  .share-acc:hover{ background:var(--emerald); color:#EFFCF4; }
-  .share-acc:disabled{ opacity:.5; cursor:wait; }
-  .acc-modal{ position:fixed; inset:0; background:rgba(14,27,34,0.72); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000; }
-  .acc-modal.open{ display:flex; }
-  .acc-box{ background:var(--paper); color:var(--ink); border-radius:8px; padding:20px; width:100%; max-width:460px; display:flex; flex-direction:column; gap:10px; }
-  .acc-box h4{ font-family:'Cairo',sans-serif; font-size:16px; }
-  .acc-box p{ font-size:12px; color:rgba(14,27,34,0.6); line-height:1.7; }
-  .acc-box textarea{ width:100%; min-height:190px; resize:vertical; border:1px solid var(--line-strong); border-radius:4px; padding:10px; font-family:inherit; font-size:14px; line-height:1.8; background:#fff; color:var(--ink); }
-  .acc-box .acc-actions{ display:flex; gap:8px; justify-content:flex-end; }
-  .acc-box .acc-actions button{ border:none; border-radius:4px; padding:9px 16px; font-family:inherit; font-size:13px; cursor:pointer; }
-  .acc-box .acc-save{ background:var(--emerald); color:#EFFCF4; }
-  .acc-box .acc-cancel{ background:rgba(14,27,34,0.1); color:var(--ink); }
 
   .row-actions{ display:flex; gap:6px; justify-content:flex-end; }
   .row-actions button{ border:none; border-radius:3px; padding:5px 9px; font-size:12px; cursor:pointer; font-family:inherit; }
-  .row-actions .edit-btn{ background:rgba(201,162,39,0.16); color:#8a6d10; }
-  .row-actions .del-btn{ background:rgba(190,74,60,0.14); color:var(--rust-deep); }
+  .row-actions .edit-btn{ background:color-mix(in srgb, var(--gold) 16%, transparent); color:var(--gold); }
+  .row-actions .del-btn{ background:color-mix(in srgb, var(--rust) 14%, transparent); color:var(--rust-deep); }
   .row-edit-form td{ padding:8px 10px; }
   .row-edit-form input{ width:100%; border:1px solid var(--line-strong); border-radius:3px; padding:6px 8px; font-family:inherit; font-size:13px; }
-  .row-edit-form .save-btn{ background:var(--emerald); color:#fff; border:none; border-radius:3px; padding:6px 10px; cursor:pointer; font-family:inherit; font-size:12px; }
+  .row-edit-form .save-btn{ background:var(--emerald); color:var(--on-accent); border:none; border-radius:3px; padding:6px 10px; cursor:pointer; font-family:inherit; font-size:12px; }
   .row-edit-form .cancel-btn{ background:transparent; border:1px solid var(--line-strong); border-radius:3px; padding:6px 10px; cursor:pointer; font-family:inherit; font-size:12px; }
-  .add-row-form{ background:var(--paper-dim); }
+  .add-row-form{ background:var(--card-dim); }
   .add-row-form td{ padding:10px 10px; }
 
   /* ---------- Print / PDF export ---------- */
   @media print{
+    html[data-theme]{ --bg:#fff; --fg:#000; --fg-rgb:0,0,0; --card:#fff; --card-dim:#f3f3f3; --card-fg:#000; --card-fg-rgb:0,0,0; --shadow:transparent; --emerald-deep:#1E6146; --rust-deep:#8F3329; --gold:#8a6d10; color-scheme:light; }
+    .theme-btn, .theme-panel{ display:none !important; }
     body{ background:#fff; color:#000; padding:0; }
     .wrap{ max-width:100%; }
     .table-controls, footer, .beam-labels .hint, .import-status{ display:none !important; }
@@ -238,50 +244,45 @@
     thead{ display:table-header-group; }
     tbody tr{ break-inside:avoid; }
   }
-  .table-wrap{ background:var(--paper); border-radius:4px; overflow:hidden; }
+  .table-wrap{ background:var(--card); border-radius:16px; overflow:hidden; box-shadow:0 10px 30px var(--shadow); }
   table{ width:100%; border-collapse:collapse; font-size:13.5px;}
   thead th{
     text-align:right; padding:12px 16px; font-size:11.5px; letter-spacing:.04em;
-    color:rgba(14,27,34,0.55); border-bottom:1px solid var(--line); cursor:pointer; user-select:none;
-    background:var(--paper-dim);
+    color:rgba(var(--card-fg-rgb),0.55); border-bottom:1px solid var(--line); cursor:pointer; user-select:none;
+    background:var(--card-dim);
   }
   thead th:last-child, tbody td:last-child{ text-align:left; }
   thead th .arrow{ font-size:10px; opacity:.5; margin-inline-start:4px;}
-  tbody td{ padding:10px 16px; border-bottom:1px solid rgba(14,27,34,0.06); color:var(--ink);}
+  tbody td{ padding:10px 16px; border-bottom:1px solid rgba(var(--card-fg-rgb),0.06); color:var(--card-fg);}
   tbody tr:last-child td{ border-bottom:none;}
-  tbody tr:hover{ background:rgba(14,27,34,0.035); }
+  tbody tr:hover{ background:rgba(var(--card-fg-rgb),0.035); }
   td.amt{ font-weight:700; direction:ltr; unicode-bidi:isolate; }
   td.amt.pos{ color:var(--emerald-deep); }
   td.amt.neg{ color:var(--rust-deep); }
   .badge{ display:inline-block; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px; margin-inline-start:8px;}
-  .badge.pos{ background:rgba(47,143,99,0.14); color:var(--emerald-deep);}
-  .badge.neg{ background:rgba(190,74,60,0.14); color:var(--rust-deep);}
-  .due-badge{ display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
-  .due-badge.due{ background:rgba(201,162,39,0.18); color:#8a6d10; }
-  .due-badge.notdue{ background:rgba(14,27,34,0.08); color:rgba(14,27,34,0.5); }
-  .due-badge.unset{ color:rgba(14,27,34,0.3); font-size:12px; }
-  .due-select{ border:1px solid var(--line-strong); border-radius:3px; padding:6px 8px; font-family:inherit; font-size:13px; width:100%; }
-  .row-count{ font-size:11.5px; color:rgba(246,242,233,0.4); margin-top:10px; text-align:left;}
+  .badge.pos{ background:color-mix(in srgb, var(--emerald) 14%, transparent); color:var(--emerald-deep);}
+  .badge.neg{ background:color-mix(in srgb, var(--rust) 14%, transparent); color:var(--rust-deep);}
+  .row-count{ font-size:11.5px; color:rgba(var(--fg-rgb),0.4); margin-top:10px; text-align:left;}
 
-  footer{ text-align:center; font-size:11.5px; color:rgba(246,242,233,0.3); margin-top:50px;}
+  footer{ text-align:center; font-size:11.5px; color:rgba(var(--fg-rgb),0.3); margin-top:50px;}
 
   /* ---------- بوابة تسجيل الدخول الإجبارية ---------- */
   #loginGate{
-    position:fixed; inset:0; background:var(--ink); z-index:9999;
+    position:fixed; inset:0; background:var(--bg); z-index:9999;
     display:flex; align-items:center; justify-content:center; padding:24px;
   }
   #loginGate.hidden{ display:none; }
   .gate-card{
-    background:var(--paper); color:var(--ink); border-radius:8px; padding:32px 28px;
+    background:var(--card); color:var(--card-fg); border-radius:8px; padding:32px 28px;
     max-width:380px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4);
   }
   .gate-card img{ width:56px; height:56px; object-fit:contain; margin-bottom:14px; }
   .gate-card h2{ font-family:'Cairo',sans-serif; font-size:18px; font-weight:800; margin-bottom:6px; }
-  .gate-card p{ font-size:12.5px; color:rgba(14,27,34,0.55); margin-bottom:20px; line-height:1.6; }
-  .gate-card .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; font-size:12px; color:rgba(14,27,34,0.6); }
+  .gate-card p{ font-size:12.5px; color:rgba(var(--card-fg-rgb),0.55); margin-bottom:20px; line-height:1.6; }
+  .gate-card .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; font-size:12px; color:rgba(var(--card-fg-rgb),0.6); }
   .gate-card input{ border:1px solid var(--line); border-radius:4px; padding:11px 12px; font-family:inherit; font-size:14px; }
   .gate-card button{
-    width:100%; background:var(--emerald-deep); color:#fff; border:none; border-radius:4px;
+    width:100%; background:var(--emerald-deep); color:var(--on-accent); border:none; border-radius:4px;
     padding:12px; font-weight:700; font-family:inherit; font-size:14px; cursor:pointer; margin-top:6px;
   }
   .gate-card button:disabled{ opacity:.6; cursor:wait; }
@@ -384,6 +385,47 @@
     </div>
   </section>
 
+  <section class="charts charts-3">
+    <div class="chart-card">
+      <h3>نسبة المدين والدائن</h3>
+      <div class="chart-sub">حصة كل جهة من إجمالي الأرصدة</div>
+      <canvas id="chartShare"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>توزيع الأسماء حسب حجم الرصيد</h3>
+      <div class="chart-sub">عدد الأسماء في كل شريحة</div>
+      <canvas id="chartRanges"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>تركّز الأرصدة</h3>
+      <div class="chart-sub">النسبة التراكمية من الإجمالي مرتبة من الأكبر</div>
+      <canvas id="chartPareto"></canvas>
+    </div>
+  </section>
+
+  <section class="charts">
+    <div class="chart-card">
+      <h3>أكبر 5 مدينين مقابل أكبر 5 دائنين</h3>
+      <div class="chart-sub">مقارنة مباشرة بين الطرفين في رسم واحد</div>
+      <canvas id="chartDiverge"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>عدد الأسماء في كل جهة</h3>
+      <div class="chart-sub">عدد لا مبلغ: كام اسم مدين وكام دائن</div>
+      <canvas id="chartCount"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>المتوسط والوسيط وأكبر رصيد</h3>
+      <div class="chart-sub">مؤشرات سريعة لكل جهة</div>
+      <canvas id="chartStats"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>حصة أكبر 5 أسماء من الإجمالي</h3>
+      <div class="chart-sub">مقابل باقي الأسماء مجتمعة</div>
+      <canvas id="chartTop5"></canvas>
+    </div>
+  </section>
+
   <section class="table-section">
     <h2>كل الأسماء</h2>
 
@@ -439,14 +481,8 @@
       <button data-filter="all" class="active">الكل</button>
       <button data-filter="pos">مدين فقط</button>
       <button data-filter="neg">دائن فقط</button>
-      <select id="dueFilter">
-        <option value="all">كل حالات الاستحقاق</option>
-        <option value="مستحق">مستحق فقط</option>
-        <option value="غير مستحق">غير مستحق فقط</option>
-      </select>
       <div class="io-group">
         <button type="button" class="io-btn add-row" id="addRowBtn">+ إضافة اسم</button>
-        <button type="button" class="io-btn add-row" id="accountsBtn">🏦 حسابات الشركة</button>
         <button type="button" class="io-btn import" id="importBtn">⭳ استيراد Excel</button>
         <button type="button" class="io-btn export" id="exportBtn">⭱ تصدير Excel</button>
         <button type="button" class="io-btn pdf-import" id="importPdfBtn">⭳ استيراد PDF</button>
@@ -461,9 +497,7 @@
         <thead>
           <tr>
             <th data-sort="name">الاسم <span class="arrow">↕</span></th>
-            <th>الهاتف</th>
             <th data-sort="amount">المبلغ <span class="arrow">↕</span></th>
-            <th>الاستحقاق</th>
             <th class="actions-col" id="actionsHeader" style="display:none;">إجراءات</th>
           </tr>
         </thead>
@@ -473,21 +507,21 @@
     <div class="row-count" id="rowCount"></div>
   </section>
 
-  <div class="acc-modal" id="accModal">
-    <div class="acc-box">
-      <h4>🏦 حسابات الشركة للتحويل</h4>
-      <p>اكتب كل حساب في سطر (مثال: بنك مصر — رقم الحساب — اسم صاحب الحساب، أو رقم محفظة فودافون كاش). هتتحول لصورة وتتبعت للعميل مع الرسالة.</p>
-      <textarea id="accText" placeholder="بنك ..... — رقم الحساب: ....&#10;فودافون كاش: 01xxxxxxxxx"></textarea>
-      <div class="acc-actions">
-        <button type="button" class="acc-cancel" id="accCancel">إلغاء</button>
-        <button type="button" class="acc-save" id="accSave">حفظ</button>
-      </div>
-    </div>
-  </div>
-
   <footer>تم إنشاء هذه اللوحة تلقائياً من كشف الحساب المرفوع</footer>
 </div>
 
+<button type="button" class="theme-btn" id="themeBtn" aria-label="تغيير الثيم" title="تغيير الثيم">🎨</button>
+<div class="theme-panel" id="themePanel">
+  <div class="tp-title">اختر شكل التطبيق</div>
+  <div class="tp-grid">
+    <button type="button" class="tp-item" data-theme="midnight"><span class="tp-sw" style="--a:#0A1730;--b:#F4F7FC;--c:#14B8A6"></span>منتصف الليل</button>
+    <button type="button" class="tp-item" data-theme="emerald"><span class="tp-sw" style="--a:#06201A;--b:#FBF8EF;--c:#D4A93A"></span>الزمرد الملكي</button>
+    <button type="button" class="tp-item" data-theme="graphite"><span class="tp-sw" style="--a:#0A0E15;--b:#151C28;--c:#2DD4BF"></span>جرافيت داكن</button>
+    <button type="button" class="tp-item" data-theme="daylight"><span class="tp-sw" style="--a:#EEF2F8;--b:#FFFFFF;--c:#2563EB"></span>نهاري</button>
+    <button type="button" class="tp-item" data-theme="royal"><span class="tp-sw" style="--a:#140F2E;--b:#FAF8FF;--c:#7C3AED"></span>ملكي بنفسجي</button>
+    <button type="button" class="tp-item" data-theme="sand"><span class="tp-sw" style="--a:#F4EEE4;--b:#FFFDF9;--c:#C8553D"></span>رمال دافئة</button>
+  </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -552,26 +586,6 @@ async function cloudSet(key, value, shared){
 
 const DATA_KEY = 'af_dashboard_data_v1';
 
-// ---------- أرقام الهواتف: تتسجل يدويًا فقط، ومنفصلة تمامًا عن ملفات الاستيراد والتصدير ----------
-// بتتحفظ باسم العميل/المورد، فاستيراد ملف جديد مبيمسحش الأرقام ولا بيقرأ منه أرقام.
-let PHONES = {};
-let ACCOUNTS_TEXT = ''; // حسابات الشركة (بتتحول لصورة وتتبعت مع رسالة التحويل)
-function phoneKey(name){ return String(name || '').replace(/\s+/g,' ').trim(); }
-function getPhone(row){ return PHONES[phoneKey(row.name)] || ''; }
-function setPhone(name, phone){
-  const k = phoneKey(name);
-  if(!k) return;
-  const v = String(phone || '').trim();
-  if(v) PHONES[k] = v; else delete PHONES[k];
-}
-// ترحيل أي أرقام قديمة كانت متخزنة جوه صفوف البيانات إلى القائمة المنفصلة
-function migrateRowPhones(){
-  DATA.forEach(r=>{
-    if(r.phone){ const k = phoneKey(r.name); if(k && !PHONES[k]) PHONES[k] = String(r.phone).trim(); }
-    delete r.phone;
-  });
-}
-
 function loadSavedData(){
   try{
     const raw = localStorage.getItem(DATA_KEY);
@@ -583,7 +597,7 @@ function loadSavedData(){
 }
 
 async function saveData(){
-  const bundle = { data: DATA, phones: PHONES, accounts: ACCOUNTS_TEXT, statementDate: statementDate, savedAt: new Date().toISOString() };
+  const bundle = { data: DATA, statementDate: statementDate, savedAt: new Date().toISOString() };
   try{ localStorage.setItem(DATA_KEY, JSON.stringify(bundle)); }catch(err){}
   if(hasFirestore){
     try{ await db.collection('af_dashboard').doc('data').set(bundle); }catch(err){ console.error(err); }
@@ -606,22 +620,15 @@ async function loadInitialData(){
   }
   if(!bundle) bundle = loadSavedData();
   if(bundle && Array.isArray(bundle.data) && bundle.data.length) DATA = bundle.data;
-  if(bundle && bundle.phones && typeof bundle.phones === 'object') PHONES = bundle.phones;
-  if(bundle && typeof bundle.accounts === 'string') ACCOUNTS_TEXT = bundle.accounts;
   if(bundle && typeof bundle.statementDate === 'string') statementDate = bundle.statementDate;
 }
 
 function applyIncomingBundle(bundle){
   if(!bundle || !Array.isArray(bundle.data)) return;
-  const incomingPhones = (bundle.phones && typeof bundle.phones === 'object') ? bundle.phones : null;
-  const dataChanged = JSON.stringify(bundle.data) !== JSON.stringify(DATA)
-    || (incomingPhones && JSON.stringify(incomingPhones) !== JSON.stringify(PHONES))
-    || (typeof bundle.accounts === 'string' && bundle.accounts !== ACCOUNTS_TEXT);
+  const dataChanged = JSON.stringify(bundle.data) !== JSON.stringify(DATA);
   const dateChanged = typeof bundle.statementDate === 'string' && bundle.statementDate !== statementDate;
   if(!dataChanged && !dateChanged) return;
   DATA = bundle.data;
-  if(incomingPhones) PHONES = incomingPhones;
-  if(typeof bundle.accounts === 'string') ACCOUNTS_TEXT = bundle.accounts;
   if(typeof bundle.statementDate === 'string') statementDate = bundle.statementDate;
   ensureIds();
   editingId = null;
@@ -671,7 +678,6 @@ function ensureIds(){
   DATA.forEach(r=>{ if(typeof r._id === 'number') maxId = Math.max(maxId, r._id); });
   if(nextId <= maxId) nextId = maxId + 1;
   DATA.forEach(r=>{ if(r._id == null) r._id = nextId++; });
-  migrateRowPhones();
 }
 
 // ---------- المستخدم الحالي والصلاحيات (محفوظة في هذا المتصفح فقط) ----------
@@ -810,7 +816,7 @@ function renderIdentity(){
 function applyPermissionUI(){
   const allowed = isAccountant();
   document.getElementById('actionsHeader').style.display = allowed ? '' : 'none';
-  ['addRowBtn','importBtn','importPdfBtn','accountsBtn'].forEach(id=>{
+  ['addRowBtn','importBtn','importPdfBtn'].forEach(id=>{
     const btn = document.getElementById(id);
     btn.classList.toggle('locked', !allowed);
     btn.title = allowed ? '' : 'هذه الميزة متاحة للمحاسب المسجل دخوله فقط';
@@ -835,6 +841,8 @@ const fmt = n => Math.round(n).toLocaleString('en-US');
 const baseFont = { family: "'IBM Plex Sans Arabic', sans-serif", size: 11 };
 let chartCreditInstance = null;
 let chartDebitInstance = null;
+let moreCharts = [];
+let chartShareInstance = null, chartRangesInstance = null, chartParetoInstance = null;
 
 function renderStats(){
   const credit = DATA.filter(r=>r.amount>0);
@@ -863,7 +871,15 @@ function renderStats(){
   return { credit, debit };
 }
 
+function themeColors(){
+  const cs = getComputedStyle(document.documentElement);
+  const g = n => cs.getPropertyValue(n).trim();
+  return { credit:g('--emerald'), debit:g('--rust'), accent:g('--c-accent'), sky:g('--c-sky'), gold:g('--gold'), neutral:g('--c-neutral'), text:g('--chart-text'), grid:cs.getPropertyValue('--chart-grid').trim() || 'rgba(0,0,0,0.08)' };
+}
+
 function renderCharts(credit, debit){
+  const C = themeColors();
+  Chart.defaults.color = C.text;
   const topCredit = [...credit].sort((a,b)=>b.amount-a.amount).slice(0,10);
   const topDebit = [...debit].sort((a,b)=>a.amount-b.amount).slice(0,10);
 
@@ -874,13 +890,13 @@ function renderCharts(credit, debit){
     type:'bar',
     data:{
       labels: topCredit.map(r=>r.name),
-      datasets:[{ data: topCredit.map(r=>r.amount), backgroundColor:'#2F8F63', borderRadius:2 }]
+      datasets:[{ data: topCredit.map(r=>r.amount), backgroundColor:C.credit, borderRadius:6 }]
     },
     options:{
       indexAxis:'y', responsive:true,
       plugins:{ legend:{display:false}, tooltip:{ rtl:true, callbacks:{ label: c => fmt(c.raw) } } },
       scales:{
-        x:{ ticks:{ font:baseFont, callback:v=>fmt(v) }, grid:{ color:'rgba(14,27,34,0.08)'} },
+        x:{ ticks:{ font:baseFont, callback:v=>fmt(v) }, grid:{ color:C.grid} },
         y:{ ticks:{ font:baseFont }, grid:{ display:false } }
       }
     }
@@ -890,17 +906,119 @@ function renderCharts(credit, debit){
     type:'bar',
     data:{
       labels: topDebit.map(r=>r.name),
-      datasets:[{ data: topDebit.map(r=>Math.abs(r.amount)), backgroundColor:'#BE4A3C', borderRadius:2 }]
+      datasets:[{ data: topDebit.map(r=>Math.abs(r.amount)), backgroundColor:C.debit, borderRadius:6 }]
     },
     options:{
       indexAxis:'y', responsive:true,
       plugins:{ legend:{display:false}, tooltip:{ rtl:true, callbacks:{ label: c => fmt(c.raw) } } },
       scales:{
-        x:{ ticks:{ font:baseFont, callback:v=>fmt(v) }, grid:{ color:'rgba(14,27,34,0.08)'} },
+        x:{ ticks:{ font:baseFont, callback:v=>fmt(v) }, grid:{ color:C.grid} },
         y:{ ticks:{ font:baseFont }, grid:{ display:false } }
       }
     }
   });
+
+  // ---- مخططات جديدة ----
+  [chartShareInstance, chartRangesInstance, chartParetoInstance].forEach(c=>{ if(c) c.destroy(); });
+  const creditTotal = credit.reduce((t,r)=>t+r.amount,0);
+  const debitTotal = debit.reduce((t,r)=>t+Math.abs(r.amount),0);
+  const tipRtl = { rtl:true, callbacks:{ label: c => ' ' + (c.dataset.label ? c.dataset.label + ': ' : '') + fmt(c.raw) } };
+
+  chartShareInstance = new Chart(document.getElementById('chartShare'), {
+    type:'doughnut',
+    data:{ labels:['مدين','دائن'], datasets:[{ data:[creditTotal, debitTotal], backgroundColor:[C.credit,C.debit], borderWidth:0, hoverOffset:8 }] },
+    options:{ responsive:true, cutout:'68%',
+      plugins:{ legend:{ position:'bottom', labels:{ font:baseFont, usePointStyle:true } },
+        tooltip:{ rtl:true, callbacks:{ label: c => ' ' + c.label + ': ' + fmt(c.raw) } } } }
+  });
+
+  const edges = [0, 1000, 5000, 10000, 50000, Infinity];
+  const bucketLabels = ['أقل من 1,000','1,000 – 5,000','5,000 – 10,000','10,000 – 50,000','أكثر من 50,000'];
+  const countIn = (arr, i) => arr.filter(r=>{ const a=Math.abs(r.amount); return a>=edges[i] && a<edges[i+1]; }).length;
+  chartRangesInstance = new Chart(document.getElementById('chartRanges'), {
+    type:'bar',
+    data:{ labels:bucketLabels, datasets:[
+      { label:'مدين', data:bucketLabels.map((_,i)=>countIn(credit,i)), backgroundColor:C.credit, borderRadius:6 },
+      { label:'دائن', data:bucketLabels.map((_,i)=>countIn(debit,i)),  backgroundColor:C.debit, borderRadius:6 }
+    ]},
+    options:{ responsive:true,
+      plugins:{ legend:{ position:'bottom', labels:{ font:baseFont, usePointStyle:true } }, tooltip:{ rtl:true } },
+      scales:{ x:{ stacked:true, ticks:{ font:baseFont }, grid:{ display:false } },
+               y:{ stacked:true, beginAtZero:true, ticks:{ font:baseFont, precision:0 }, grid:{ color:C.grid } } } }
+  });
+
+  const sortedAbs = [...DATA].map(r=>Math.abs(r.amount)).sort((a,b)=>b-a);
+  const totalAbs = sortedAbs.reduce((t,v)=>t+v,0) || 1;
+  let run = 0;
+  const cum = sortedAbs.map(v=>{ run += v; return +(run/totalAbs*100).toFixed(1); });
+  chartParetoInstance = new Chart(document.getElementById('chartPareto'), {
+    type:'line',
+    data:{ labels: sortedAbs.map((_,i)=>i+1), datasets:[{ label:'التراكمي ٪', data:cum, borderColor:C.accent, backgroundColor:C.accent+'2E', fill:true, tension:.3, pointRadius:0, borderWidth:2.5 }] },
+    options:{ responsive:true,
+      plugins:{ legend:{display:false}, tooltip:{ rtl:true, callbacks:{ title:i=>'أكبر ' + i[0].label + ' اسم', label:c=>' ' + c.raw + '٪ من الإجمالي' } } },
+      scales:{ x:{ ticks:{ font:baseFont, maxTicksLimit:8 }, grid:{ display:false }, title:{ display:true, text:'عدد الأسماء', font:baseFont } },
+               y:{ min:0, max:100, ticks:{ font:baseFont, callback:v=>v+'٪' }, grid:{ color:C.grid } } } }
+  });
+
+  // ---- مخططات إضافية ----
+  moreCharts.forEach(c=>c.destroy()); moreCharts = [];
+  const legendBottom = { position:'bottom', labels:{ font:baseFont, usePointStyle:true } };
+  const median = arr => { if(!arr.length) return 0; const a=[...arr].sort((x,y)=>x-y); const m=Math.floor(a.length/2); return a.length%2 ? a[m] : (a[m-1]+a[m])/2; };
+
+  // 1) أكبر 5 مدينين مقابل أكبر 5 دائنين (رسم واحد)
+  const t5c = [...credit].sort((a,b)=>b.amount-a.amount).slice(0,5);
+  const t5d = [...debit].sort((a,b)=>a.amount-b.amount).slice(0,5);
+  const dv = [...t5c, ...t5d];
+  moreCharts.push(new Chart(document.getElementById('chartDiverge'), {
+    type:'bar',
+    data:{ labels: dv.map(r=>r.name), datasets:[{ data: dv.map(r=>r.amount), backgroundColor: dv.map(r=>r.amount>0?C.credit:C.debit), borderRadius:6 }] },
+    options:{ indexAxis:'y', responsive:true,
+      plugins:{ legend:{display:false}, tooltip:{ rtl:true, callbacks:{ label:c=>' ' + (c.raw>0?'مدين: ':'دائن: ') + fmt(Math.abs(c.raw)) } } },
+      scales:{ x:{ ticks:{ font:baseFont, callback:v=>fmt(v) }, grid:{ color:C.grid } },
+               y:{ ticks:{ font:baseFont }, grid:{ display:false } } } }
+  }));
+
+  // 2) عدد الأسماء
+  const zeroCount = DATA.filter(r=>r.amount===0).length;
+  const cLabels = ['مدين','دائن'], cData = [credit.length, debit.length], cColors = [C.credit,C.debit];
+  if(zeroCount){ cLabels.push('رصيد صفر'); cData.push(zeroCount); cColors.push(C.neutral); }
+  moreCharts.push(new Chart(document.getElementById('chartCount'), {
+    type:'polarArea',
+    data:{ labels:cLabels, datasets:[{ data:cData, backgroundColor:cColors.map(c=>c+'CC'), borderColor:cColors, borderWidth:1.5 }] },
+    options:{ responsive:true,
+      plugins:{ legend:legendBottom, tooltip:{ rtl:true, callbacks:{ label:c=>' ' + c.label + ': ' + c.raw + ' اسم' } } },
+      scales:{ r:{ ticks:{ display:false }, grid:{ color:C.grid } } } }
+  }));
+
+  // 3) المتوسط والوسيط وأكبر رصيد
+  const cAbs = credit.map(r=>r.amount), dAbs = debit.map(r=>Math.abs(r.amount));
+  const avg = a => a.length ? a.reduce((t,v)=>t+v,0)/a.length : 0;
+  moreCharts.push(new Chart(document.getElementById('chartStats'), {
+    type:'bar',
+    data:{ labels:['المتوسط','الوسيط','الأكبر'], datasets:[
+      { label:'مدين', data:[avg(cAbs), median(cAbs), Math.max(0,...cAbs)], backgroundColor:C.credit, borderRadius:6 },
+      { label:'دائن', data:[avg(dAbs), median(dAbs), Math.max(0,...dAbs)], backgroundColor:C.debit, borderRadius:6 }
+    ]},
+    options:{ responsive:true,
+      plugins:{ legend:legendBottom, tooltip:{ rtl:true, callbacks:{ label:c=>' ' + c.dataset.label + ': ' + fmt(c.raw) } } },
+      scales:{ x:{ ticks:{ font:baseFont }, grid:{ display:false } },
+               y:{ beginAtZero:true, ticks:{ font:baseFont, callback:v=>fmt(v) }, grid:{ color:C.grid } } } }
+  }));
+
+  // 4) حصة أكبر 5 أسماء (بالقيمة المطلقة) من الإجمالي
+  const byAbs = [...DATA].sort((a,b)=>Math.abs(b.amount)-Math.abs(a.amount));
+  const top5 = byAbs.slice(0,5);
+  const top5Sum = top5.reduce((t,r)=>t+Math.abs(r.amount),0);
+  const allSum = byAbs.reduce((t,r)=>t+Math.abs(r.amount),0);
+  moreCharts.push(new Chart(document.getElementById('chartTop5'), {
+    type:'doughnut',
+    data:{ labels:[...top5.map(r=>r.name), 'باقي الأسماء'],
+      datasets:[{ data:[...top5.map(r=>Math.abs(r.amount)), Math.max(0, allSum-top5Sum)],
+        backgroundColor:[C.accent,C.credit,C.gold,C.debit,C.sky,C.neutral], borderWidth:0, hoverOffset:8 }] },
+    options:{ responsive:true, cutout:'60%',
+      plugins:{ legend:legendBottom,
+        tooltip:{ rtl:true, callbacks:{ label:c=>' ' + c.label + ': ' + fmt(c.raw) + ' (' + (allSum ? (c.raw/allSum*100).toFixed(1) : 0) + '٪)' } } } }
+  }));
 }
 
 // Table
@@ -910,75 +1028,11 @@ let searchTerm = '';
 let editingId = null;
 let addingRow = false;
 
-function toWhatsAppNumber(phone){
-  let digits = String(phone).replace(/\D/g,'');
-  if(digits.startsWith('00')) digits = digits.slice(2);
-  if(digits.startsWith('0')) digits = '20' + digits.slice(1); // افتراضي: مصر (٢٠) — غيّرها هنا لو محتاج كود دولة تاني
-  else if(digits.length <= 10 && !digits.startsWith('20')) digits = '20' + digits;
-  return digits;
-}
-
-function buildWelcomeMessage(row){
-  const isPos = row.amount > 0;
-  const statusLabel = isPos ? 'مدين' : 'دائن';
-  const amountFmt = fmt(Math.abs(row.amount));
-  const dueLine = row.due ? `\nحالة الاستحقاق: ${row.due}.` : '';
-  // لو الرصيد مدين (العميل عليه مبلغ) نضيف طلب التحويل
-  const transferLine = isPos
-    ? `\nنرجو التكرم بتحويل المبلغ المستحق (${amountFmt} جنيه) في أقرب وقت، وإرسال صورة إيصال التحويل على هذا الرقم لتأكيد الاستلام.`
-    : '';
-  return `السلام عليكم ورحمة الله وبركاته 🌟\nالأستاذ/ ${row.name}\nتحية طيبة من شركة الفردوس للنقل والتوريدات.\nرصيدكم الحالي معنا: ${amountFmt} جنيه (${statusLabel}).${dueLine}${transferLine}\nنشكر لكم حسن تعاملكم معنا، ونسعد بخدمتكم دائمًا.`;
-}
-
-function shareBtnHtml(row){
-  if(!(row.amount > 0)) return '';
-  return `<button type="button" class="share-acc" data-share-id="${row._id}" title="إرسال الرسالة مع صورة حسابات الشركة">📤 رسالة + حسابات</button>`;
-}
-
-function phoneCellHtml(row){
-  const phone = getPhone(row);
-  const share = shareBtnHtml(row);
-  if(!phone) return '<span class="no-phone">— لا يوجد</span>' + share;
-  const clean = escapeHtml(phone);
-  const dial = String(phone).replace(/[^0-9+]/g,'');
-  const waNumber = toWhatsAppNumber(phone);
-  const message = encodeURIComponent(buildWelcomeMessage(row));
-  return `<a class="phone-link" href="https://wa.me/${waNumber}?text=${message}" target="_blank" rel="noopener" title="إرسال رسالة واتساب بالرصيد">💬 ${clean}</a><a class="call-icon" href="tel:${dial}" title="اتصال مباشر">📞</a>${share}`;
-}
-
-function normalizeDue(v){
-  const s = String(v || '').trim();
-  if(!s) return '';
-  if(/^غير/.test(s) || /not\s*due/i.test(s)) return 'غير مستحق';
-  if(/مستحق/.test(s) || /^due$/i.test(s)) return 'مستحق';
-  return '';
-}
-
-function dueCellHtml(due){
-  if(due === 'مستحق') return '<span class="due-badge due">مستحق</span>';
-  if(due === 'غير مستحق') return '<span class="due-badge notdue">غير مستحق</span>';
-  return '<span class="due-badge unset">—</span>';
-}
-
-function dueSelectHtml(id, selected){
-  const opts = ['', 'مستحق', 'غير مستحق'].map(v=>{
-    const label = v === '' ? '— غير محدد —' : v;
-    return `<option value="${v}" ${v===selected?'selected':''}>${label}</option>`;
-  }).join('');
-  return `<select class="due-select" id="${id}">${opts}</select>`;
-}
-
-let dueFilter = 'all';
-document.getElementById('dueFilter').addEventListener('change', (e)=>{
-  dueFilter = e.target.value;
-  renderTable();
-});
 
 function renderTable(){
   let rows = DATA.filter(r=>{
     if(currentFilter==='pos' && r.amount<=0) return false;
     if(currentFilter==='neg' && r.amount>=0) return false;
-    if(dueFilter !== 'all' && r.due !== dueFilter) return false;
     if(searchTerm && !r.name.includes(searchTerm)) return false;
     return true;
   });
@@ -994,9 +1048,7 @@ function renderTable(){
   if(allowed && addingRow){
     addFormHtml = `<tr class="add-row-form">
       <td><input type="text" id="newName" placeholder="اسم جديد"></td>
-      <td><input type="text" id="newPhone" placeholder="رقم الهاتف (اختياري)"></td>
       <td><input type="number" id="newAmount" placeholder="المبلغ" value="0"></td>
-      <td>${dueSelectHtml('newDue', '')}</td>
       <td class="actions-col"><div class="row-actions">
         <button type="button" class="save-btn" data-action="add-save">حفظ</button>
         <button type="button" class="cancel-btn" data-action="add-cancel">إلغاء</button>
@@ -1008,9 +1060,7 @@ function renderTable(){
     if(allowed && editingId === r._id){
       return `<tr class="row-edit-form" data-row-id="${r._id}">
         <td><input type="text" id="editName" value="${escapeHtml(r.name)}"></td>
-        <td><input type="text" id="editPhone" value="${escapeHtml(getPhone(r))}" placeholder="01xxxxxxxxx"></td>
         <td><input type="number" id="editAmount" value="${r.amount}"></td>
-        <td>${dueSelectHtml('editDue', r.due || '')}</td>
         <td class="actions-col"><div class="row-actions">
           <button type="button" class="save-btn" data-action="save" data-id="${r._id}">حفظ</button>
           <button type="button" class="cancel-btn" data-action="cancel" data-id="${r._id}">إلغاء</button>
@@ -1024,9 +1074,7 @@ function renderTable(){
       </div></td>` : '';
     return `<tr>
       <td>${escapeHtml(r.name)} <span class="badge ${pos?'pos':'neg'}">${pos?'مدين':'دائن'}</span></td>
-      <td>${phoneCellHtml(r)}</td>
       <td class="amt ${pos?'pos':'neg'}">${fmt(r.amount)}</td>
-      <td>${dueCellHtml(r.due)}</td>
       ${actionsHtml}
     </tr>`;
   }).join('');
@@ -1047,12 +1095,10 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
 
   if(action === 'save'){
     const name = document.getElementById('editName').value.trim();
-    const phone = document.getElementById('editPhone').value.trim();
     const amount = Number(document.getElementById('editAmount').value);
-    const due = document.getElementById('editDue').value;
     if(!name){ alert('الاسم مطلوب'); return; }
     const row = DATA.find(r=>r._id===id);
-    if(row){ const oldKey = phoneKey(row.name); if(oldKey !== phoneKey(name)) delete PHONES[oldKey]; setPhone(name, phone); row.name = name; row.amount = Number.isNaN(amount) ? 0 : amount; row.due = due; }
+    if(row){ row.name = name; row.amount = Number.isNaN(amount) ? 0 : amount; }
     editingId = null;
     pushLog(`تعديل بيانات "${name}"`);
     saveData();
@@ -1065,7 +1111,6 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
     if(!row) return;
     if(!confirm(`متأكد من حذف "${row.name}"؟`)) return;
     DATA = DATA.filter(r=>r._id!==id);
-    delete PHONES[phoneKey(row.name)];
     pushLog(`حذف "${row.name}"`);
     saveData();
     renderAll();
@@ -1074,12 +1119,9 @@ document.getElementById('tableBody').addEventListener('click', (e)=>{
 
   if(action === 'add-save'){
     const name = document.getElementById('newName').value.trim();
-    const phone = document.getElementById('newPhone').value.trim();
     const amount = Number(document.getElementById('newAmount').value) || 0;
-    const due = document.getElementById('newDue').value;
     if(!name){ alert('الاسم مطلوب'); return; }
-    DATA.push({ _id: nextId++, name, amount, due });
-    setPhone(name, phone);
+    DATA.push({ _id: nextId++, name, amount });
     addingRow = false;
     pushLog(`إضافة اسم جديد "${name}"`);
     saveData();
@@ -1287,7 +1329,7 @@ document.getElementById('saveDateBtn').addEventListener('click', ()=>{
 
 async function boot(){
   const tbody = document.getElementById('tableBody');
-  if(hasFirestore || hasArtifactStorage){ tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:rgba(14,27,34,0.4);">جاري تحميل البيانات المشتركة...</td></tr>'; }
+  if(hasFirestore || hasArtifactStorage){ tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; color:rgba(var(--card-fg-rgb),0.4);">جاري تحميل البيانات المشتركة...</td></tr>'; }
 
   const syncBtn = document.getElementById('syncBtn');
   if(hasFirestore) syncBtn.textContent = '🌍 مزامنة فورية شغالة';
@@ -1304,141 +1346,11 @@ async function boot(){
   renderAll();
 }
 
-// ---------- حسابات الشركة: تعديلها + تحويلها لصورة + مشاركتها مع الرسالة ----------
-const accModal = document.getElementById('accModal');
-const accText = document.getElementById('accText');
-
-document.getElementById('accountsBtn').addEventListener('click', ()=>{
-  if(!isAccountant()){ alert('تعديل حسابات الشركة متاح للمحاسب المسجل دخوله فقط'); return; }
-  accText.value = ACCOUNTS_TEXT;
-  accModal.classList.add('open');
-});
-document.getElementById('accCancel').addEventListener('click', ()=> accModal.classList.remove('open'));
-document.getElementById('accSave').addEventListener('click', ()=>{
-  if(!isAccountant()) return;
-  ACCOUNTS_TEXT = accText.value.trim();
-  pushLog('تعديل حسابات الشركة');
-  saveData();
-  accModal.classList.remove('open');
-  importStatus.textContent = ACCOUNTS_TEXT ? 'تم حفظ حسابات الشركة ✅' : 'تم مسح حسابات الشركة';
-});
-
-async function buildAccountsImage(){
-  try{ await document.fonts.load('700 34px Cairo'); await document.fonts.load('500 30px "IBM Plex Sans Arabic"'); }catch(err){}
-  const W = 1080, pad = 60, maxW = W - pad*2;
-  const bodyFont = '500 34px "IBM Plex Sans Arabic", Cairo, sans-serif';
-  const lineH = 62;
-  const measure = document.createElement('canvas').getContext('2d');
-  measure.font = bodyFont; measure.direction = 'rtl';
-
-  // تقسيم كل سطر لأسطر أقصر لو أطول من عرض الصورة
-  const lines = [];
-  ACCOUNTS_TEXT.split('\n').map(l=>l.trim()).filter(Boolean).forEach(raw=>{
-    const words = raw.split(/\s+/);
-    let cur = '';
-    words.forEach(w=>{
-      const test = cur ? cur + ' ' + w : w;
-      if(measure.measureText(test).width > maxW && cur){ lines.push(cur); cur = w; }
-      else cur = test;
-    });
-    if(cur) lines.push(cur);
-    lines.push(null); // فاصل بين الحسابات
-  });
-  if(lines.length && lines[lines.length-1] === null) lines.pop();
-
-  const headerH = 230, footerH = 110;
-  const H = headerH + lines.reduce((h,l)=>h + (l===null ? 26 : lineH), 0) + footerH;
-  const c = document.createElement('canvas');
-  c.width = W; c.height = H;
-  const ctx = c.getContext('2d');
-  ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-
-  ctx.fillStyle = '#F6F2E9'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle = '#0E1B22'; ctx.fillRect(0,0,W,headerH);
-  ctx.fillStyle = '#C9A227'; ctx.fillRect(0,headerH,W,6);
-
-  ctx.fillStyle = '#F6F2E9';
-  ctx.font = '800 46px Cairo, sans-serif';
-  ctx.fillText('شركة الفردوس للنقل والتوريدات', W - pad, 88);
-  ctx.fillStyle = '#C9A227';
-  ctx.font = '700 36px Cairo, sans-serif';
-  ctx.fillText('حسابات الشركة للتحويل', W - pad, 158);
-
-  let y = headerH + 6 + 52;
-  ctx.fillStyle = '#0E1B22';
-  ctx.font = bodyFont;
-  lines.forEach(l=>{
-    if(l === null){
-      ctx.fillStyle = 'rgba(14,27,34,0.15)';
-      ctx.fillRect(pad, y - 8, maxW, 2);
-      y += 26; ctx.fillStyle = '#0E1B22';
-    }else{
-      ctx.fillText(l, W - pad, y);
-      y += lineH;
-    }
-  });
-
-  ctx.fillStyle = '#1E6146';
-  ctx.font = '600 30px "IBM Plex Sans Arabic", Cairo, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('نرجو إرسال صورة إيصال التحويل بعد التحويل — شكرًا لتعاملكم معنا', W/2, H - 52);
-
-  return await new Promise(res=> c.toBlob(res, 'image/png'));
-}
-
-async function shareMessageWithAccounts(row, btn){
-  if(!ACCOUNTS_TEXT){
-    alert(isAccountant()
-      ? 'ضيف حسابات الشركة الأول من زر "🏦 حسابات الشركة"'
-      : 'لسه محدش ضاف حسابات الشركة — المحاسب يضيفها الأول');
-    return;
-  }
-  const original = btn.textContent;
-  btn.disabled = true; btn.textContent = 'جاري التجهيز...';
-  try{
-    const blob = await buildAccountsImage();
-    const file = new File([blob], 'حسابات-الفردوس.png', { type:'image/png' });
-    const text = buildWelcomeMessage(row) + '\nأرقام حساباتنا للتحويل في الصورة المرفقة.';
-
-    if(navigator.canShare && navigator.canShare({ files:[file] })){
-      try{
-        await navigator.share({ files:[file], text });
-      }catch(err){
-        if(err && err.name === 'AbortError') return; // المستخدم قفل نافذة المشاركة
-        throw err;
-      }
-    }else{
-      // المتصفح مش بيدعم مشاركة الملفات: نحمّل الصورة ونفتح واتساب بالرسالة، والصورة تتبعت يدويًا
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'حسابات-الفردوس.png';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 5000);
-      const phone = getPhone(row);
-      const target = phone ? `https://wa.me/${toWhatsAppNumber(phone)}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
-      window.open(target, '_blank', 'noopener');
-      alert('المتصفح ده مش بيدعم مشاركة الملفات مباشرة. الصورة اتحملت على الجهاز — ارفقها يدويًا في المحادثة.');
-    }
-  }catch(err){
-    console.error(err);
-    alert('حصلت مشكلة في تجهيز صورة الحسابات: ' + (err && err.message ? err.message : err));
-  }finally{
-    btn.disabled = false; btn.textContent = original;
-  }
-}
-
-document.getElementById('tableBody').addEventListener('click', (e)=>{
-  const btn = e.target.closest('button[data-share-id]');
-  if(!btn) return;
-  const row = DATA.find(r=>r._id === Number(btn.dataset.shareId));
-  if(row) shareMessageWithAccounts(row, btn);
-});
-
 // ---------- تصدير Excel ----------
 document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const rows = DATA.map(r=>({ 'الاسم': r.name, 'المبلغ': r.amount, 'الاستحقاق': r.due || '' }));
+  const rows = DATA.map(r=>({ 'الاسم': r.name, 'المبلغ': r.amount }));
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{ wch: 30 }, { wch: 14 }, { wch: 14 }];
+  ws['!cols'] = [{ wch: 30 }, { wch: 14 }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'كشف الحساب');
   const stamp = new Date().toISOString().slice(0,10);
@@ -1505,21 +1417,19 @@ importInput.addEventListener('change', (e)=>{
 
       if(!rows.length) throw new Error('الملف فارغ');
 
-      // يحاول التعرف على أعمدة الاسم والمبلغ والتاريخ (الهاتف بيتسجل يدويًا فقط) بأي تسمية شائعة
+      // يحاول التعرف على أعمدة الاسم والمبلغ والتاريخ بأي تسمية شائعة
       const sample = rows[0];
       const keys = Object.keys(sample);
       const nameKey = keys.find(k => /اسم|name/i.test(k)) || keys[0];
       const amountKey = keys.find(k => /مبلغ|amount|رصيد|قيمه|قيمة/i.test(k)) || keys[1];
       const dateKey = keys.find(k => /تاريخ|date/i.test(k));
-      const dueKey = keys.find(k => /استحقاق|due/i.test(k));
 
       if(!nameKey || !amountKey) throw new Error('تعذر التعرف على أعمدة الاسم والمبلغ');
 
       const parsed = rows
         .map(r => ({
           name: String(r[nameKey]).trim(),
-          amount: Number(String(r[amountKey]).toString().replace(/,/g,'')) || 0,
-          due: dueKey ? normalizeDue(r[dueKey]) : ''
+          amount: Number(String(r[amountKey]).toString().replace(/,/g,'')) || 0
         }))
         .filter(r => r.name);
 
@@ -1625,7 +1535,7 @@ importPdfInput.addEventListener('change', async (e)=>{
       const name = m[1].replace(/[|]+$/,'').trim();
       const amount = Number(m[2].replace(/,/g,''));
       if(name && !Number.isNaN(amount) && name.length < 60){
-        parsed.push({ name, amount, due:'' });
+        parsed.push({ name, amount });
       }
     });
 
@@ -1696,6 +1606,40 @@ installBtn.addEventListener('click', async ()=>{
   }
   alert(manualInstallInstructions());
 });
+</script>
+<script>
+(function(){
+  var THEME_KEY = 'af-theme';
+  var BG = { midnight:'#0A1730', emerald:'#06201A', graphite:'#0A0E15', daylight:'#EEF2F8', royal:'#140F2E', sand:'#F4EEE4' };
+  var btn = document.getElementById('themeBtn');
+  var panel = document.getElementById('themePanel');
+  var items = panel.querySelectorAll('.tp-item');
+
+  function mark(name){
+    items.forEach(function(b){ b.classList.toggle('active', b.dataset.theme === name); });
+  }
+  function applyTheme(name, save){
+    if(!BG[name]) name = 'midnight';
+    document.documentElement.setAttribute('data-theme', name);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute('content', BG[name]);
+    mark(name);
+    if(save){ try{ localStorage.setItem(THEME_KEY, name); }catch(e){} }
+    try{ if(typeof renderAll === 'function' && typeof DATA !== 'undefined') renderAll(); }catch(e){}
+  }
+
+  btn.addEventListener('click', function(e){ e.stopPropagation(); panel.classList.toggle('open'); });
+  document.addEventListener('click', function(e){ if(!panel.contains(e.target) && e.target !== btn) panel.classList.remove('open'); });
+  items.forEach(function(b){ b.addEventListener('click', function(){ applyTheme(b.dataset.theme, true); }); });
+
+  var saved = null;
+  try{ saved = localStorage.getItem(THEME_KEY); }catch(e){}
+  var current = saved && BG[saved] ? saved : 'midnight';
+  document.documentElement.setAttribute('data-theme', current);
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content', BG[current]);
+  mark(current);
+})();
 </script>
 </body>
 </html>
